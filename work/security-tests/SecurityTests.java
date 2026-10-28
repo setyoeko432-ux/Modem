@@ -1,3 +1,4 @@
+import com.mifiservice.security.PasswordPolicy;
 import com.mifiservice.security.Redactor;
 import com.mifiservice.security.SessionManager;
 import com.mifiservice.security.Validator;
@@ -11,6 +12,8 @@ public final class SecurityTests {
     public static void main(String[] args) throws Exception {
         testSessions();
         testRateLimit();
+        testSessionManagement();
+        testPasswordPolicy();
         testValidation();
         testRedaction();
         System.out.println("security tests passed: " + checks);
@@ -35,17 +38,89 @@ public final class SecurityTests {
         check(!SessionManager.isValid(second), "other sessions invalidated after password change");
     }
 
+    private static final long SEC = 1000000000L;
+
     private static void testRateLimit() {
         SessionManager.clearForTests();
-        SessionManager.setNowNanosForTests(1000000000L);
-        String remote = "192.168.100.11";
+        SessionManager.setNowNanosForTests(1000 * SEC);
         for (int i = 0; i < 5; i++) {
-            check(SessionManager.loginAllowed(remote), "login allowed before failure " + i);
-            SessionManager.recordLoginFailure(remote);
+            check(SessionManager.loginAllowed("10.0.0.2", "admin"), "allowed before failure " + i);
+            SessionManager.recordLoginFailure("10.0.0.2", "admin");
         }
-        check(!SessionManager.loginAllowed(remote), "login cooldown after fifth failure");
-        SessionManager.advanceNanosForTests(60L * 1000000000L + 1L);
-        check(SessionManager.loginAllowed(remote), "login allowed after cooldown");
+        check(!SessionManager.loginAllowed("10.0.0.2", "admin"), "account delayed after 5");
+        check(!SessionManager.loginAllowed("10.0.0.9", "admin"),
+                "account delay applies from another address");
+        check(SessionManager.loginAllowed("10.0.0.9", "other"), "other account unaffected");
+        check(SessionManager.retryAfterSeconds("10.0.0.2", "admin") == 30, "first delay 30s");
+        SessionManager.advanceNanosForTests(31 * SEC);
+        check(SessionManager.loginAllowed("10.0.0.2", "admin"), "allowed after first delay");
+        SessionManager.recordLoginFailure("10.0.0.2", "admin");
+        check(SessionManager.retryAfterSeconds("10.0.0.2", "admin") == 60, "delay doubles");
+        for (int i = 0; i < 30; i++) {
+            SessionManager.advanceNanosForTests(16 * 60 * SEC);
+            SessionManager.recordLoginFailure("10.0.0.2", "admin");
+            check(SessionManager.retryAfterSeconds("10.0.0.2", "admin") <= 900, "delay capped");
+        }
+        SessionManager.clearForTests();
+        SessionManager.setNowNanosForTests(1000 * SEC);
+        SessionManager.recordLoginFailure("10.0.0.2", "admin");
+        SessionManager.recordLoginSuccess("10.0.0.2", "admin");
+        for (int i = 0; i < 4; i++) {
+            SessionManager.recordLoginFailure("10.0.0.2", "admin");
+        }
+        check(SessionManager.loginAllowed("10.0.0.2", "admin"), "success resets account count");
+
+        SessionManager.clearForTests();
+        SessionManager.setNowNanosForTests(1000 * SEC);
+        for (int i = 0; i < 20; i++) {
+            SessionManager.recordLoginFailure("10.0.0.7", "user" + i);
+        }
+        check(!SessionManager.loginAllowed("10.0.0.7", "fresh"), "address backstop");
+    }
+
+    private static void testSessionManagement() {
+        SessionManager.clearForTests();
+        SessionManager.setNowNanosForTests(1000 * SEC);
+        String a = SessionManager.create("a", false);
+        String b = SessionManager.create("b", false);
+        String idB = SessionManager.publicId(b);
+        check(idB != null && idB.length() == 12 && a.indexOf(idB) < 0 && b.indexOf(idB) < 0,
+                "public id is independent of token");
+        check(SessionManager.list(a).size() == 2, "list shows both");
+        check(!SessionManager.revoke(SessionManager.publicId(a), a), "cannot revoke self via revoke");
+        check(SessionManager.revoke(idB, a) && !SessionManager.isValid(b), "revoke other");
+        check(SessionManager.destroy(a) && !SessionManager.isValid(a), "logout destroys");
+        check(!SessionManager.destroy(null), "destroy null safe");
+        for (int i = 0; i < 6; i++) {
+            SessionManager.create("c" + i, false);
+        }
+        check(SessionManager.list(null).size() == 4, "session cap");
+    }
+
+    private static void testPasswordPolicy() throws Exception {
+        check(PasswordPolicy.check("Tr0ub4dor-horse-9", "admin") == null, "good password");
+        check("newpwd_short".equals(PasswordPolicy.check("Short1!", "x")), "short");
+        check("newpwd_weak".equals(PasswordPolicy.check("aaaaaaaaaaaaaa", "x")), "all same");
+        check("newpwd_weak".equals(PasswordPolicy.check("MyAdminPass2026", "x")), "contains admin");
+        check("newpwd_same".equals(PasswordPolicy.check("Tr0ub4dor-horse-9", "Tr0ub4dor-horse-9")), "same");
+        check("newpwd_chars".equals(PasswordPolicy.check("has space in it 12", "x")), "space");
+        check("newpwd_chars".equals(PasswordPolicy.check("semi;colon-12345", "x")), "shell char");
+        check(PasswordPolicy.check(null, "x") != null, "null");
+
+        JSONObject legacy = new JSONObject();
+        legacy.put("funcNo", 1000);
+        legacy.put("username", "admin");
+        legacy.put("password", "p&ss;w|rd$\"x");
+        check(Validator.validate(1000, legacy) == null, "legacy password with metachars can log in");
+        legacy.put("password", "bad\u0001");
+        check(Validator.validate(1000, legacy) != null, "control char rejected");
+        JSONObject change = new JSONObject();
+        change.put("funcNo", 1020);
+        change.put("oldpwd", "o&d;pw");
+        change.put("newpwd", "Tr0ub4dor-horse-9");
+        check(Validator.validate(1020, change) == null, "old pwd metachars allowed on change");
+        change.put("newpwd", "short");
+        check(Validator.validate(1020, change) != null, "new password policy enforced");
     }
 
     private static void testValidation() throws Exception {
@@ -58,7 +133,7 @@ public final class SecurityTests {
         JSONObject modifyPwd = new JSONObject();
         modifyPwd.put("funcNo", 1020);
         modifyPwd.put("oldpwd", "admin");
-        modifyPwd.put("newpwd", "NewPass123456");
+        modifyPwd.put("newpwd", "NewPass123456x");
         String resMod = Validator.validate(1020, modifyPwd);
         if (resMod != null) {
             System.err.println("DEBUG: 1020 returned error field: " + resMod);

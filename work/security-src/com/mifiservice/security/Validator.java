@@ -37,9 +37,9 @@ public final class Validator {
 
         switch (funcNo) {
             case 1000:
-                return requireSafeString(object, "username", 1, 32, true, "username")
-                        != null ? requireSafeString(object, "username", 1, 32, true, "username")
-                        : requireSafeString(object, "password", 1, 64, true, "password");
+                String userError = requireSafeString(object, "username", 1, 32, true, "username");
+                return userError != null ? userError
+                        : requireSafeString(object, "password", 1, AuthConfig.OLD_PASSWORD_MAX, true, "password");
             case 1004:
                 return requireInt(object, "conn_mode", 0, 1);
             case 1005:
@@ -81,7 +81,8 @@ public final class Validator {
                 if (requireSafeString(object, "oldpwd", 1, 64, false, "oldpwd") != null) {
                     return "oldpwd";
                 }
-                return requireAlphanumeric(object, "newpwd", 8, 64);
+                return PasswordPolicy.check(object.optString("newpwd", null),
+                        object.optString("oldpwd", null));
             case 1025:
                 if (requireSafeString(object, "ssid", 1, 32, false, "ssid") != null) {
                     return requireSafeString(object, "ssid", 1, 32, false, "ssid");
@@ -182,6 +183,19 @@ public final class Validator {
                 String string = (String) value;
                 if (string.length() > 256) {
                     return key;
+                }
+                if ("password".equals(key) || "oldpwd".equals(key)) {
+                    // Credentials are compared in memory only, never passed to a shell.
+                    if (string.length() > AuthConfig.OLD_PASSWORD_MAX) {
+                        return key;
+                    }
+                    for (int i = 0; i < string.length(); i++) {
+                        char c = string.charAt(i);
+                        if (c < 0x20 || c == 0x7f) {
+                            return key;
+                        }
+                    }
+                    continue;
                 }
                 for (int i = 0; i < string.length(); i++) {
                     char c = string.charAt(i);

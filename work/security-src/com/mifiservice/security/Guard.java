@@ -15,10 +15,14 @@ public final class Guard {
     private static final String HEADER = "X-Mifi-Req";
     private static final String DEFAULT_PASSWORD = "admin";
 
+    /** Username of the login attempt on this request thread; set by authorize, cleared by preflight. */
+    private static final ThreadLocal<String> LOGIN_USER = new ThreadLocal<String>();
+
     private Guard() {
     }
 
     public static boolean preflight(HttpServletRequest request, HttpServletResponse response) {
+        LOGIN_USER.remove();
         if (request == null || response == null) {
             return false;
         }
@@ -53,7 +57,11 @@ public final class Guard {
         }
 
         if (funcNo == 1000) {
-            if (!SessionManager.loginAllowed(remote(request))) {
+            String user = body.optString("username", "");
+            LOGIN_USER.set(user);
+            if (!SessionManager.loginAllowed(remote(request), user)) {
+                response.addHeader("Retry-After",
+                        String.valueOf(SessionManager.retryAfterSeconds(remote(request), user)));
                 deny(response, 429, "RATE_LIMITED");
                 return false;
             }
@@ -82,21 +90,36 @@ public final class Guard {
     }
 
     public static void loginSuccess(HttpServletRequest request, HttpServletResponse response) {
+        String user = LOGIN_USER.get();
+        LOGIN_USER.remove();
+        SessionManager.recordLoginSuccess(remote(request), user == null ? "" : user);
         boolean firstRun = isShippedDefaultPassword();
         String token = SessionManager.create(remote(request), firstRun);
-        response.addHeader("Set-Cookie", "MIFISID=" + token + "; Path=/; HttpOnly");
+        response.addHeader("Set-Cookie", cookie(token));
     }
 
     public static void loginFailure(HttpServletRequest request) {
-        SessionManager.recordLoginFailure(remote(request));
+        String user = LOGIN_USER.get();
+        LOGIN_USER.remove();
+        SessionManager.recordLoginFailure(remote(request), user == null ? "" : user);
     }
 
     public static void passwordChanged(HttpServletRequest request, HttpServletResponse response) {
         String token = SessionManager.cookieToken(request.getHeader("Cookie"));
         SessionManager.passwordChanged(token);
         if (token != null && SessionManager.isValid(token)) {
-            response.addHeader("Set-Cookie", "MIFISID=" + token + "; Path=/; HttpOnly");
+            response.addHeader("Set-Cookie", cookie(token));
         }
+    }
+
+    public static void logout(HttpServletRequest request, HttpServletResponse response) {
+        SessionManager.destroy(SessionManager.cookieToken(request.getHeader("Cookie")));
+        response.addHeader("Set-Cookie", AuthConfig.SESSION_COOKIE
+                + "=; Path=/; HttpOnly; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    }
+
+    static String cookie(String token) {
+        return AuthConfig.SESSION_COOKIE + "=" + token + "; Path=/; HttpOnly; SameSite=Strict";
     }
 
     public static void redact(JSONObject response) {
