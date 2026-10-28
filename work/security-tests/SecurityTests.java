@@ -1,3 +1,4 @@
+import com.mifiservice.security.Guard;
 import com.mifiservice.security.PasswordPolicy;
 import com.mifiservice.security.Redactor;
 import com.mifiservice.security.SessionManager;
@@ -16,6 +17,7 @@ public final class SecurityTests {
         testPasswordPolicy();
         testValidation();
         testRedaction();
+        testAuthorizationAllowlist();
         System.out.println("security tests passed: " + checks);
     }
 
@@ -178,6 +180,20 @@ public final class SecurityTests {
         check(output.indexOf("2345") >= 0, "IMEI suffix preserved");
     }
 
+    private static void testAuthorizationAllowlist() {
+        check(Guard.isAllowed(1001), "cellular status remains allowed after login");
+        check(Guard.isAllowed(1002), "status query remains allowed after login");
+        check(Guard.isAllowed(1020), "password change remains allowed after login");
+        check(!Guard.isAllowed(1013), "device reboot is default-deny");
+        check(!Guard.isAllowed(1014), "factory restore is default-deny");
+        check(!Guard.isAllowed(1024), "duplicate device reboot is default-deny");
+        check(!Guard.isAllowed(2000), "bootloader transition is default-deny");
+        check(!Guard.isAllowed(2001), "USB diagnostic composition is default-deny");
+        check(!Guard.isAllowed(2002), "device identity mutation is default-deny");
+        check(!Guard.isAllowed(3000), "OTA execution is default-deny");
+        check(!Guard.isAllowed(3001), "OTA artifact cleanup is default-deny");
+        check(Guard.isAllowed(3002), "non-mutating firmware information query remains allowed");
+    }
     private static void check(boolean condition, String message) {
         checks++;
         if (!condition) {

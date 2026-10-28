@@ -321,7 +321,6 @@
         0x3f2 -> :sswitch_0
         0x3f3 -> :sswitch_0
         0x3f4 -> :sswitch_0
-        0x3f5 -> :sswitch_0
         0x3f7 -> :sswitch_0
         0x3f8 -> :sswitch_0
         0x3f9 -> :sswitch_0
@@ -329,7 +328,6 @@
         0x3fc -> :sswitch_0
         0x3fd -> :sswitch_0
         0x3ff -> :sswitch_0
-        0x400 -> :sswitch_0
         0x401 -> :sswitch_0
         0x402 -> :sswitch_0
         0x403 -> :sswitch_0
@@ -339,7 +337,6 @@
         0x41d -> :sswitch_0
         0x41e -> :sswitch_0
         0x41f -> :sswitch_0
-        0xbb9 -> :sswitch_0
         0xbba -> :sswitch_0
     .end sparse-switch
 .end method

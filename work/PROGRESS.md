@@ -50,3 +50,14 @@
 - [x] **T9 & T10: Decision, Logging, and Report**
   - Decision: **PASS**.
   - Logged findings in `reports/SECURITY_PATCH_LOG.md`.
+
+## Phase 2 policy review — 2026-10-28
+
+- [x] Review found the compiled Smali allowlist still admitted authenticated calls to device reboot (`1013`, `1024`) and OTA artifact deletion (`3001`), contrary to the default-deny design.
+- [x] Removed those IDs from both `work/security-src/.../Guard.java` and `work/decoded_hardened/smali/.../Guard.smali` in review branch `security/phase2-default-deny-20261028`.
+- [x] Added host assertions for the critical-operation allowlist.
+- [ ] Re-run the host test harness and static Smali scan.
+- [ ] Rebuild and sign a new APK; existing `MifiService_v7_signed.apk` is unchanged and must not be treated as containing this patch.
+- [ ] Run non-destructive request-matrix tests and confirm the normal login/configuration UI still works before any installation.
+
+Open issues intentionally not claimed as fixed here: CSRF synchronizer-token enforcement, plain-HTTP credential/session exposure, full request-body size bounding for chunked requests, and end-to-end testing of a fresh build.

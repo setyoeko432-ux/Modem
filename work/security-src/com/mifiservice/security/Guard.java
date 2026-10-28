@@ -148,7 +148,6 @@ public final class Guard {
             case 1010:
             case 1011:
             case 1012:
-            case 1013:
             case 1015:
             case 1016:
             case 1017:
@@ -156,7 +155,6 @@ public final class Guard {
             case 1020:
             case 1021:
             case 1023:
-            case 1024:
             case 1025:
             case 1026:
             case 1027:
@@ -166,7 +164,6 @@ public final class Guard {
             case 1053:
             case 1054:
             case 1055:
-            case 3001:
             case 3002:
                 return true;
             default:
