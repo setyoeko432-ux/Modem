@@ -1,0 +1,27 @@
+version: 3.0.3
+apkFileName: MifiService.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 15
+  targetSdkVersion: 19
+versionInfo:
+  versionCode: 7
+  versionName: 1.0
+resourcesInfo:
+  packageId: 127
+doNotCompress:
+- arsc
+- gif
+- jpg
+- png
+- assets/jetty/USER_Manual_en.pdf
+- assets/jetty/USER_Manual_zh.pdf
+- assets/jetty/css/content.lst
+- assets/jetty/json/content.lst
+- assets/jetty2/USER_Manual_en.pdf
+- assets/jetty2/USER_Manual_zh.pdf
+- assets/jetty2/css/content.lst
+- assets/jetty2/json/content.lst
+- org/eclipse/jetty/http/useragents

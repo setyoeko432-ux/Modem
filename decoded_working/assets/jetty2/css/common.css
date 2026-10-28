@@ -1,0 +1,122 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', Arial, sans-serif !important;
+}
+
+html, body {
+  background-color: transparent !important;
+  color: #0f172a !important;
+  width: 100% !important;
+  padding: 0;
+}
+
+body, body *, p, span, td, th, div, label, legend, font, b, strong, a, h1, h2, h3, h4 {
+  color: #0f172a;
+}
+
+#main, #main2, .main {
+  width: 100% !important;
+  margin: 0 auto;
+}
+
+div.block, .block {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 16px 20px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+div.block h2, h2, h3 {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  height: auto !important;
+  line-height: normal !important;
+  margin-bottom: 12px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+div.block h2 span, h2 span, h3 span {
+  color: #0284c7 !important;
+  float: none !important;
+  padding-left: 0 !important;
+  font-size: 15px !important;
+}
+
+div.content, .content {
+  float: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+table, .table_list {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border: none !important;
+  margin: 6px 0 !important;
+}
+
+table tr { background: transparent !important; }
+
+table td, table th, .table_list td, .table_list th {
+  padding: 8px 10px !important;
+  font-size: 13.5px !important;
+  color: #334155 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  text-align: left !important;
+}
+
+table th, .table_list th {
+  background: #f8fafc !important;
+  color: #0284c7 !important;
+  font-weight: 600 !important;
+}
+
+table tr:last-child td {
+  border-bottom: none !important;
+}
+
+input[type="text"], input[type="password"], select, textarea {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  font-size: 13.5px !important;
+  outline: none !important;
+  min-width: 180px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, select:focus {
+  border-color: #0284c7 !important;
+}
+
+.btn, .btn-primary, input[type="submit"], input[type="button"], input[type="reset"] {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 7px 16px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  margin: 4px 2px !important;
+  box-shadow: 0 1px 2px rgba(2, 132, 199, 0.15) !important;
+}
+
+.btn:hover, .btn-primary:hover, input[type="submit"]:hover, input[type="button"]:hover {
+  background: #0369a1 !important;
+}
+
+.boxbot, div.boxbot { display: none !important; }

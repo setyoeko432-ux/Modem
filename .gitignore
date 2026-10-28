@@ -1,0 +1,41 @@
+# Windows OS & System files
+nul
+[Nn]ul
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AI / Session Metadata
+.opencode/
+
+# Compiled Java & Python Build Outputs
+*.class
+__pycache__/
+*.pyc
+build/
+work/security-build/
+
+# Intermediate / Unsigned APK builds (keep repo clean)
+work/*_unsigned.apk
+work/*_aligned.apk
+
+# Sensitive keys & local device configs (defence in depth)
+*.pk8
+*.pem
+*.keystore
+*.jks
+mificonfig.json
+auth
+shadow
+local.properties
+
+# Logs & Temporary files
+*.log
+*.tmp

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <id name="action_start" />
+    <id name="action_stop" />
+    <id name="action_settings" />
+</resources>
