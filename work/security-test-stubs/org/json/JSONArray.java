@@ -25,7 +25,7 @@ public class JSONArray {
             if (i > 0) {
                 result.append(',');
             }
-            result.append(String.valueOf(values.get(i)));
+            result.append(JSONObject.valueToString(values.get(i)));
         }
         return result.append(']').toString();
     }

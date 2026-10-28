@@ -82,8 +82,13 @@ public final class Guard {
             deny(response, 401, "SESSION_REQUIRED");
             return false;
         }
-        if (needsPasswordChange(token) && funcNo != 1020) {
+        if (needsPasswordChange(token) && funcNo != 1020
+                && funcNo != AuthApi.WHOAMI && funcNo != AuthApi.LOGOUT) {
             deny(response, 403, "PASSWORD_CHANGE_REQUIRED");
+            return false;
+        }
+        if (AuthApi.owns(funcNo)) {
+            AuthApi.handle(funcNo, request, response, body);
             return false;
         }
         return true;
@@ -165,6 +170,10 @@ public final class Guard {
             case 1054:
             case 1055:
             case 3002:
+            case 1060:
+            case 1061:
+            case 1062:
+            case 1063:
                 return true;
             default:
                 return false;

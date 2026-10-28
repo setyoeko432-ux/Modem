@@ -33,7 +33,11 @@
         return true;
     }
     if (xhr.status === 429) {
-        var msg = errInfo ? (mifi_translate(errInfo) || errInfo) : "Too many attempts. Please wait and try again.";
+        var wait = parseInt(xhr.getResponseHeader ? xhr.getResponseHeader("Retry-After") : "", 10);
+        var msg = "Too many attempts. Please wait and try again.";
+        if (wait > 0) {
+            msg = "Too many attempts. Try again in " + (wait >= 60 ? Math.ceil(wait / 60) + " min" : wait + " s") + ".";
+        }
         Alert(msg);
         return true;
     }

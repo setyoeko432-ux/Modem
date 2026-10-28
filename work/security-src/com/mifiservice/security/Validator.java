@@ -97,6 +97,18 @@ public final class Validator {
                 }
                 return compareIPv4(object.optString("range_low", ""),
                         object.optString("range_high", "")) < 0 ? null : "range";
+            case 1063: {
+                String id = object.optString("id", "");
+                if (id.length() != 12) {
+                    return "id";
+                }
+                for (int i = 0; i < id.length(); i++) {
+                    if (Character.digit(id.charAt(i), 16) < 0) {
+                        return "id";
+                    }
+                }
+                return null;
+            }
             case 1053:
                 return requireInt(object, "type", 0, 3);
             case 1054:
