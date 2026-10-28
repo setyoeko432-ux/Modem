@@ -106,7 +106,11 @@ $("#apply").bind('click', function(e) {
 
         if (flag == "1") {
             Alert(mifi_translate('modifyOk'));
-            window.location = "index.html";
+            // The server keeps the current session after a password change; end it so the
+            // "please log in again" message is true and the login page does not auto-resume it.
+            request({"funcNo": 1061}, function() {
+                window.location = "index.html";
+            });
             return;
         } else {
             var msg = (mifi_translate(error_info) || error_info || "Modification failed") + "\n" + mifi_translate('policy');

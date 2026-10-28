@@ -21,7 +21,7 @@ Do not install anything before the host gate passes and the user approves. Max 3
 ## Phase 1b (added)
 - `AuthApi` (1060 whoami, 1061 logout, 1062 list, 1063 revoke) is handled entirely inside `Guard.authorize`, which returns false after writing the response. `AjaxSevlet.smali` needs NO routing change; its existing false-branch goes to `:goto_1`. 1060/1061 are exempt from the forced-password-change block so logout always works.
 - Frontend: `modifyPwd.js/html` now say 12-64 and show a message per server code (`INVALID_INPUT:newpwd_short|long|chars|weak|same`); `ajax.js` reads `Retry-After` on 429 ("Try again in N s"). Languages covered: en, zh only (ru/id are Phase 3).
-- Host gate, run from `work/`:
+- Host gate: run `work/run_gates.sh` (stops at the first failure). Manual steps, from `work/`:
   - `javac -d OUT $(find security-src security-stubs security-test-stubs security-tests -name '*.java')`
   - `java -cp OUT SecurityTests` (84) and `java -cp OUT GuardFlowTests` (20)
   - `java -cp OUT HostServer decoded_hardened/assets/jetty2 PORT admin &` then `python3 -I security-tests/e2e_login.py http://127.0.0.1:PORT` (14 checks, headless Chromium)
@@ -44,3 +44,5 @@ UNVERIFIED ON DEVICE (check before relying on it):
 4. Preferences are SAVED server-side but the existing pages do not yet READ them (language/theme/refresh/unit): that is Phase 3.
 
 FIRST THING AFTER INSTALL: log in, open "Account & Sessions", create a recovery code and write it down. Until then a forgotten password still has no recovery path.
+
+Fix found by the gate: after a successful password change the page said "log in again" but the server keeps the current session, and the new login-page auto-resume sent the user straight back in. `modifyPwd.js` now calls 1061 (logout) before redirecting.
