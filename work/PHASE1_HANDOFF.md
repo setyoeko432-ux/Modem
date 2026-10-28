@@ -27,3 +27,20 @@ Do not install anything before the host gate passes and the user approves. Max 3
   - `java -cp OUT HostServer decoded_hardened/assets/jetty2 PORT admin &` then `python3 -I security-tests/e2e_login.py http://127.0.0.1:PORT` (14 checks, headless Chromium)
 - LIMITS of the gate: HostServer is a test double of AjaxSevlet.doPost with a fake business layer and a hand-written org.json stub. It proves Guard + frontend behave together; it does NOT prove the smali build, Jetty behaviour, Android API 19 behaviour or anything on the device. Keep an on-device check (login, forced change, logout, wrong-password throttle) before declaring done.
 - Not yet done: reboot persistence, ADB TCP 7628 exposure, 1064+ (prefs/remember-me/recovery), ru/id strings.
+
+## Phase 2 (added): remember-me, recovery code, preferences, account page
+Host-verified only (same limits as above). Gate now also includes `java -cp OUT AuthFlowTests` (73 checks) and
+`python3 -I security-tests/e2e_phase2.py http://127.0.0.1:PORT` against `HostServer ... PORT Start-Password-12` (23 checks).
+
+New classes (all need dex -> smali): `AuthStore`, `Crypto`, `Recovery`, `RememberMe`, `Prefs`. Changed: `AuthApi` (1064 get prefs, 1065 set prefs, 1066 recover, 1067 new recovery code), `Guard`, `Validator`, `SessionManager`, `AuthConfig`.
+Frontend: `index.html/js` (remember box, forgot-password, resume via 1060 with its own error handler), new `account.html` + `js/account.js`, menu link in `main.html`, `ajax.js` message fallback (`RM_TEXT`).
+
+Behaviour: 1066 needs no session but needs the X-Mifi-Req header, a valid code, and a policy-valid new password; it is throttled (key "recover") and kills all sessions and remember tokens on success. Remember-me is resumed only through 1060 (whoami); a remember cookie alone authorises nothing else. Remember tokens are rotated on use; right selector + wrong validator wipes all tokens. Password change wipes remember tokens.
+
+UNVERIFIED ON DEVICE (check before relying on it):
+1. `/data/mifi_auth.json` must be writable by the service (shared system UID, `/data/mificonfig.json` already lives there). If the write fails, 1065/1067 answer `STORAGE`; the admin password is never affected.
+2. Remember-me expiry uses the wall clock. A modem without network time may report a wrong date; tokens then expire early/late. Not a bypass of the password, but test it.
+3. `MifiConfiguration.saveToFile()` is what persists the recovered password (same call the 1020 path uses).
+4. Preferences are SAVED server-side but the existing pages do not yet READ them (language/theme/refresh/unit): that is Phase 3.
+
+FIRST THING AFTER INSTALL: log in, open "Account & Sessions", create a recovery code and write it down. Until then a forgotten password still has no recovery path.

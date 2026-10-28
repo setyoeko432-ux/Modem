@@ -111,6 +111,10 @@ public final class SessionManager {
         return Math.max(a, i);
     }
 
+    public static synchronized void destroyAll() {
+        SESSIONS.clear();
+    }
+
     public static synchronized boolean destroy(String token) {
         return token != null && SESSIONS.remove(token) != null;
     }

@@ -18,11 +18,14 @@ public final class Guard {
     /** Username of the login attempt on this request thread; set by authorize, cleared by preflight. */
     private static final ThreadLocal<String> LOGIN_USER = new ThreadLocal<String>();
 
+    private static final ThreadLocal<Boolean> REMEMBER = new ThreadLocal<Boolean>();
+
     private Guard() {
     }
 
     public static boolean preflight(HttpServletRequest request, HttpServletResponse response) {
         LOGIN_USER.remove();
+        REMEMBER.remove();
         if (request == null || response == null) {
             return false;
         }
@@ -59,6 +62,7 @@ public final class Guard {
         if (funcNo == 1000) {
             String user = body.optString("username", "");
             LOGIN_USER.set(user);
+            REMEMBER.set(Boolean.valueOf("1".equals(body.optString("remember", ""))));
             if (!SessionManager.loginAllowed(remote(request), user)) {
                 response.addHeader("Retry-After",
                         String.valueOf(SessionManager.retryAfterSeconds(remote(request), user)));
@@ -68,6 +72,23 @@ public final class Guard {
             return true;
         }
 
+        if (funcNo == AuthApi.RECOVER) {
+            if (!"1".equals(request.getHeader(HEADER))) {
+                deny(response, 403, "FORBIDDEN");
+                return false;
+            }
+            String key = "recover";
+            if (!SessionManager.loginAllowed(remote(request), key)) {
+                response.addHeader("Retry-After",
+                        String.valueOf(SessionManager.retryAfterSeconds(remote(request), key)));
+                deny(response, 429, "RATE_LIMITED");
+                return false;
+            }
+            // Every attempt counts against the throttle; a success is a one-off.
+            SessionManager.recordLoginFailure(remote(request), key);
+            AuthApi.handle(funcNo, request, response, body);
+            return false;
+        }
         if (!isAllowed(funcNo)) {
             deny(response, 403, "FORBIDDEN");
             return false;
@@ -79,6 +100,13 @@ public final class Guard {
 
         String token = SessionManager.cookieToken(request.getHeader("Cookie"));
         if (!SessionManager.isValid(token)) {
+            if (funcNo == AuthApi.WHOAMI) {
+                String resumed = resumeFromRememberMe(request, response);
+                if (resumed != null) {
+                    AuthApi.handle(funcNo, request, response, body, resumed);
+                    return false;
+                }
+            }
             deny(response, 401, "SESSION_REQUIRED");
             return false;
         }
@@ -101,6 +129,14 @@ public final class Guard {
         boolean firstRun = isShippedDefaultPassword();
         String token = SessionManager.create(remote(request), firstRun);
         response.addHeader("Set-Cookie", cookie(token));
+        Boolean remember = REMEMBER.get();
+        REMEMBER.remove();
+        if (remember != null && remember.booleanValue() && !firstRun) {
+            String value = RememberMe.issue();
+            if (value != null) {
+                response.addHeader("Set-Cookie", rememberCookie(value));
+            }
+        }
     }
 
     public static void loginFailure(HttpServletRequest request) {
@@ -112,6 +148,7 @@ public final class Guard {
     public static void passwordChanged(HttpServletRequest request, HttpServletResponse response) {
         String token = SessionManager.cookieToken(request.getHeader("Cookie"));
         SessionManager.passwordChanged(token);
+        RememberMe.wipeAll();
         if (token != null && SessionManager.isValid(token)) {
             response.addHeader("Set-Cookie", cookie(token));
         }
@@ -119,8 +156,46 @@ public final class Guard {
 
     public static void logout(HttpServletRequest request, HttpServletResponse response) {
         SessionManager.destroy(SessionManager.cookieToken(request.getHeader("Cookie")));
+        RememberMe.revoke(cookieValue(request.getHeader("Cookie"), AuthConfig.REMEMBER_COOKIE));
+        response.addHeader("Set-Cookie", AuthConfig.REMEMBER_COOKIE
+                + "=; Path=/; HttpOnly; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
         response.addHeader("Set-Cookie", AuthConfig.SESSION_COOKIE
                 + "=; Path=/; HttpOnly; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    }
+
+    static String rememberCookie(String value) {
+        return AuthConfig.REMEMBER_COOKIE + "=" + value + "; Path=/; HttpOnly; SameSite=Strict; Max-Age="
+                + RememberMe.LIFETIME_SECONDS;
+    }
+
+    static String cookieValue(String header, String name) {
+        if (header == null) {
+            return null;
+        }
+        String[] parts = header.split(";");
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i].trim();
+            if (part.startsWith(name + "=")) {
+                return part.substring(name.length() + 1);
+            }
+        }
+        return null;
+    }
+
+    private static String resumeFromRememberMe(HttpServletRequest request, HttpServletResponse response) {
+        String cookie = cookieValue(request.getHeader("Cookie"), AuthConfig.REMEMBER_COOKIE);
+        String fresh = RememberMe.consume(cookie);
+        if (fresh == null) {
+            if (cookie != null) {
+                response.addHeader("Set-Cookie", AuthConfig.REMEMBER_COOKIE
+                        + "=; Path=/; HttpOnly; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+            }
+            return null;
+        }
+        String token = SessionManager.create(remote(request), false);
+        response.addHeader("Set-Cookie", cookie(token));
+        response.addHeader("Set-Cookie", rememberCookie(fresh));
+        return token;
     }
 
     static String cookie(String token) {
@@ -174,6 +249,9 @@ public final class Guard {
             case 1061:
             case 1062:
             case 1063:
+            case 1064:
+            case 1065:
+            case 1067:
                 return true;
             default:
                 return false;

@@ -107,7 +107,7 @@ function login(){
 
 	var user = $("#username").val();
 	var pwd = $("#password").val();
-	var param = {funcNo:1000,username:user,password:pwd};
+	var param = {funcNo:1000,username:user,password:pwd,remember:($("#remember").is(":checked") ? "1" : "0")};
 	request(param,function(data){
 		var flag = data.flag;
 		var error_info = data.error_info;
@@ -127,3 +127,68 @@ function login(){
 	});
 	
 }
+
+
+/* ---- session resume (remember-me) and password recovery ---- */
+var RM_TEXT = {
+	"RECOVERY_FAILED": "That recovery code is not valid. It can be used only once.",
+	"INVALID_INPUT:code": "The recovery code looks wrong (20 letters/digits, e.g. ABCDE-FGHJK-LMNPQ-RSTUV).",
+	"INVALID_INPUT:newpwd_short": "New password is too short: use at least 12 characters.",
+	"INVALID_INPUT:newpwd_long": "New password is too long: use at most 64 characters.",
+	"INVALID_INPUT:newpwd_chars": "Use only letters, digits and _ - . ! @ # % ^ * + = ? ~",
+	"INVALID_INPUT:newpwd_weak": "That password is too easy to guess.",
+	"INVALID_INPUT:newpwd_same": "The new password must differ from the old one.",
+	"INVALID_INPUT:newpwd": "Invalid new password.",
+	"STORAGE": "Could not save. Try again.",
+	"recovered": "Password reset. Please log in with the new password."
+};
+
+function rmMsg(key) {
+	return RM_TEXT[key] || key;
+}
+
+/* whoami with its OWN error handling: the shared handler redirects 401 to index.html, which would loop here. */
+function resumeSession() {
+	$.ajax({
+		url: "/ajax",
+		data: JSON.stringify({funcNo: 1060}),
+		type: "post",
+		dataType: "json",
+		timeout: 8000,
+		beforeSend: function(xhr) { xhr.setRequestHeader("X-Mifi-Req", "1"); },
+		success: function(data) {
+			if (data && data.flag == "1" && data.results && data.results[0]) {
+				window.location = data.results[0].needsPasswordChange == "1" ? "modifyPwd.html" : "main.html";
+			}
+		},
+		error: function() { /* not signed in: stay on the login form */ }
+	});
+}
+
+$("#forgotLink").bind('click', function(e) {
+	e.preventDefault();
+	$(".recoveryRow").toggle();
+});
+
+$("#recoverBtn").bind('click', function(e) {
+	var code = $("#recoveryCode").val();
+	var newpwd = $("#recoveryNewPwd").val();
+	if (code == "" || newpwd == "") {
+		Alert(rmMsg("INVALID_INPUT:code"));
+		return;
+	}
+	request({funcNo: 1066, code: code, newpwd: newpwd}, function(data) {
+		if (data.flag == "1") {
+			$("#recoveryCode").val("");
+			$("#recoveryNewPwd").val("");
+			$(".recoveryRow").hide();
+			Alert(rmMsg("recovered"));
+		} else {
+			Alert(rmMsg(data.error_info));
+		}
+	});
+});
+
+$(function() {
+	resumeSession();
+});

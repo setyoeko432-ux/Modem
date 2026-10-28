@@ -33,6 +33,9 @@ public final class HostServer {
     public static void main(String[] args) throws Exception {
         final File root = new File(args[0]);
         int port = Integer.parseInt(args[1]);
+        File authFile = File.createTempFile("host_auth", ".json");
+        authFile.delete();
+        com.mifiservice.security.AuthStore.setFile(authFile);
         MifiConfiguration cfg = new MifiConfiguration();
         cfg.loginPassword = args.length > 2 ? args[2] : "admin";
         MifiConfiguration.instance = cfg;

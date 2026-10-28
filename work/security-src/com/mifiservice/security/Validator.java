@@ -109,6 +109,18 @@ public final class Validator {
                 }
                 return null;
             }
+            case 1065: {
+                Object prefs = object.opt("prefs");
+                return prefs instanceof JSONObject ? Prefs.validate((JSONObject) prefs) : "prefs";
+            }
+            case 1066: {
+                if (Recovery.normalize(object.optString("code", null)) == null) {
+                    return "code";
+                }
+                return PasswordPolicy.check(object.optString("newpwd", null), null);
+            }
+            case 1067:
+                return requireSafeString(object, "password", 1, AuthConfig.OLD_PASSWORD_MAX, false, "password");
             case 1053:
                 return requireInt(object, "type", 0, 3);
             case 1054:

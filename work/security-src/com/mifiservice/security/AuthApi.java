@@ -16,18 +16,27 @@ public final class AuthApi {
     public static final int LOGOUT = 1061;
     public static final int LIST = 1062;
     public static final int REVOKE = 1063;
+    public static final int GET_PREFS = 1064;
+    public static final int SET_PREFS = 1065;
+    public static final int RECOVER = 1066;
+    public static final int NEW_RECOVERY_CODE = 1067;
 
     private AuthApi() {
     }
 
     public static boolean owns(int funcNo) {
-        return funcNo >= WHOAMI && funcNo <= REVOKE;
+        return funcNo >= WHOAMI && funcNo <= NEW_RECOVERY_CODE;
     }
 
     /** Writes the full response. Caller has already authenticated the request. */
     public static void handle(int funcNo, HttpServletRequest request, HttpServletResponse response,
             JSONObject body) {
-        String token = SessionManager.cookieToken(request.getHeader("Cookie"));
+        handle(funcNo, request, response, body, SessionManager.cookieToken(request.getHeader("Cookie")));
+    }
+
+    /** Same, with an explicit session token (used right after a remember-me resume). */
+    public static void handle(int funcNo, HttpServletRequest request, HttpServletResponse response,
+            JSONObject body, String token) {
         try {
             JSONArray results = new JSONArray();
             String error = "";
@@ -64,6 +73,52 @@ public final class AuthApi {
                         error = "NOT_FOUND";
                     }
                     break;
+                case GET_PREFS: {
+                    JSONObject wrapper = new JSONObject();
+                    wrapper.put("prefs", Prefs.get());
+                    wrapper.put("recoveryConfigured", Recovery.exists() ? "1" : "0");
+                    results.put(wrapper);
+                    break;
+                }
+                case SET_PREFS:
+                    if (!Prefs.merge(body.optJSONObject("prefs"))) {
+                        flag = "0";
+                        error = "STORAGE";
+                    }
+                    break;
+                case RECOVER: {
+                    String reason = recover(body);
+                    if (reason != null) {
+                        flag = "0";
+                        error = reason;
+                    }
+                    break;
+                }
+                case NEW_RECOVERY_CODE: {
+                    String user = "admin";
+                    if (!SessionManager.loginAllowed(request.getRemoteAddr(), user)) {
+                        response.addHeader("Retry-After", String.valueOf(
+                                SessionManager.retryAfterSeconds(request.getRemoteAddr(), user)));
+                        writeStatus(response, 429, "RATE_LIMITED");
+                        return;
+                    }
+                    if (!currentPasswordMatches(body.optString("password", ""))) {
+                        SessionManager.recordLoginFailure(request.getRemoteAddr(), user);
+                        flag = "0";
+                        error = "INVALID_INPUT:password";
+                        break;
+                    }
+                    String code = Recovery.generate();
+                    if (code == null) {
+                        flag = "0";
+                        error = "STORAGE";
+                    } else {
+                        JSONObject item = new JSONObject();
+                        item.put("recoveryCode", code); // shown once; only a salted hash is kept
+                        results.put(item);
+                    }
+                    break;
+                }
                 default:
                     flag = "0";
                     error = "FORBIDDEN";
@@ -73,7 +128,7 @@ public final class AuthApi {
             out.put("flag", flag);
             out.put("error_info", error);
             out.put("results", results);
-            response.setStatus("1".equals(flag) ? 200 : 404);
+            response.setStatus("1".equals(flag) ? 200 : (error.equals("NOT_FOUND") ? 404 : 400));
             response.setContentType("text/json");
             PrintWriter writer = response.getWriter();
             writer.println(out.toString());
@@ -81,6 +136,47 @@ public final class AuthApi {
             // Connection is owned by the container.
         } catch (Exception ignored) {
             // Never echo request data on failure.
+        }
+    }
+
+    /** Password reset without a session. @return null on success, otherwise an error_info string. */
+    private static String recover(JSONObject body) {
+        com.mifiservice.config.MifiConfiguration cfg = com.mifiservice.config.MifiConfiguration.getInstance();
+        if (cfg == null) {
+            return "STORAGE";
+        }
+        String newPassword = body.optString("newpwd", "");
+        String policy = PasswordPolicy.check(newPassword, cfg.loginPassword);
+        if (policy != null) {
+            return "INVALID_INPUT:" + policy;
+        }
+        if (!Recovery.verifyAndConsume(body.optString("code", ""))) {
+            return "RECOVERY_FAILED";
+        }
+        cfg.loginPassword = newPassword;
+        cfg.saveToFile();
+        SessionManager.destroyAll();
+        RememberMe.wipeAll();
+        return null;
+    }
+
+    static boolean currentPasswordMatches(String candidate) {
+        com.mifiservice.config.MifiConfiguration cfg = com.mifiservice.config.MifiConfiguration.getInstance();
+        return cfg != null && cfg.loginPassword != null
+                && Crypto.constantTimeEquals(cfg.loginPassword, candidate);
+    }
+
+    static void writeStatus(HttpServletResponse response, int status, String error) {
+        try {
+            response.setStatus(status);
+            response.setContentType("text/json");
+            JSONObject out = new JSONObject();
+            out.put("flag", "0");
+            out.put("error_info", error);
+            out.put("results", new JSONArray());
+            response.getWriter().println(out.toString());
+        } catch (Exception ignored) {
+            // bounded, non-sensitive failure
         }
     }
 }

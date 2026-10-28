@@ -21,6 +21,7 @@ public final class AuthConfig {
     public static final int MAX_TRACKED_KEYS = 64;
 
     public static final String SESSION_COOKIE = "mifi_sid";
+    public static final String REMEMBER_COOKIE = "mifi_rm";
 
     private AuthConfig() {
     }

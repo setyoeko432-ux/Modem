@@ -15,6 +15,11 @@ public class JSONArray {
         return values.size();
     }
 
+    public JSONObject optJSONObject(int index) {
+        Object value = opt(index);
+        return value instanceof JSONObject ? (JSONObject) value : null;
+    }
+
     public Object opt(int index) {
         return index < 0 || index >= values.size() ? null : values.get(index);
     }

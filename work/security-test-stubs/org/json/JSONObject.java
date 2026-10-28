@@ -50,6 +50,36 @@ public class JSONObject {
         }
     }
 
+    public JSONObject optJSONObject(String key) {
+        Object value = values.get(key);
+        return value instanceof JSONObject ? (JSONObject) value : null;
+    }
+
+    public JSONArray optJSONArray(String key) {
+        Object value = values.get(key);
+        return value instanceof JSONArray ? (JSONArray) value : null;
+    }
+
+    public long optLong(String key, long fallback) {
+        Object value = values.get(key);
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        try {
+            return Long.parseLong(String.valueOf(value));
+        } catch (Exception exception) {
+            return fallback;
+        }
+    }
+
+    public int optInt(String key, int fallback) {
+        return (int) optLong(key, fallback);
+    }
+
+    public int length() {
+        return values.size();
+    }
+
     public boolean has(String key) {
         return values.containsKey(key);
     }

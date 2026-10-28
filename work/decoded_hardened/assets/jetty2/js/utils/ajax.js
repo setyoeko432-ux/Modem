@@ -1,4 +1,11 @@
-﻿function handleSecurityError(xhr) {
+﻿﻿function securityText(code) {
+    if (typeof RM_TEXT !== "undefined" && RM_TEXT && RM_TEXT[code]) {
+        return RM_TEXT[code];
+    }
+    return null;
+}
+
+function handleSecurityError(xhr) {
     if (!xhr) {
         return false;
     }
@@ -11,7 +18,7 @@
     var errInfo = (body && body.error_info) ? body.error_info : "";
 
     if (xhr.status === 400) {
-        var msg = errInfo ? (mifi_translate(errInfo) || errInfo) : "Invalid input";
+        var msg = errInfo ? (securityText(errInfo) || mifi_translate(errInfo) || errInfo) : "Invalid input";
         Alert(msg);
         return true;
     }
@@ -27,7 +34,7 @@
                 Alert("Please change the default admin password.");
             }
         } else {
-            var msg = errInfo ? (mifi_translate(errInfo) || errInfo) : "Access denied";
+            var msg = errInfo ? (securityText(errInfo) || mifi_translate(errInfo) || errInfo) : "Access denied";
             Alert(msg);
         }
         return true;

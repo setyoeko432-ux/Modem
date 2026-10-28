@@ -100,6 +100,10 @@
 										<td><input type="password" name="password" id="password" style="width:120px;"/></td>
 									</tr>
 									<tr>
+										<td></td>
+										<td><label style="font-size:12px;"><input type="checkbox" id="remember" /> <span id="rememberLabel">Keep me signed in (14 days)</span></label></td>
+									</tr>
+									<tr>
 <!--										<td align="right" width="35%" lang="Language:">Language:</td>
 										<td>
 											<select id="select" name="select" style="width:125px;">
@@ -113,6 +117,23 @@
 											<input class="btn btn-primary" id="login" type="button" value="Login" lang='Login'/> &nbsp; 
 											<input class="btn btn-primary" type="reset" value="Reset" lang='Reset'/>
 										</td>
+									</tr>
+									<tr>
+										<td colspan="2" align="center" style="padding-top:10px;"><a href="#" id="forgotLink" style="font-size:12px;">Forgot password?</a></td>
+									</tr>
+									<tr class="recoveryRow" style="display:none;">
+										<td colspan="2" style="font-size:12px;color:#666;" id="recoveryHelp">Enter the recovery code you saved earlier and choose a new password.</td>
+									</tr>
+									<tr class="recoveryRow" style="display:none;">
+										<td align="right" id="codeLabel">Recovery code:</td>
+										<td><input type="text" id="recoveryCode" autocomplete="off" maxlength="40" style="width:160px;"/></td>
+									</tr>
+									<tr class="recoveryRow" style="display:none;">
+										<td align="right" id="newPwdLabel">New password:</td>
+										<td><input type="password" id="recoveryNewPwd" autocomplete="new-password" maxlength="64" style="width:160px;"/></td>
+									</tr>
+									<tr class="recoveryRow" style="display:none;">
+										<td colspan="2" align="center"><input class="btn btn-primary" id="recoverBtn" type="button" value="Reset password"/></td>
 									</tr>
 								</tbody>
 							</table>
