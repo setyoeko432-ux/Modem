@@ -1,5 +1,4 @@
 $(function(){
-//	_loadCss("./css/layer.css");
 	init();
 });
 
@@ -9,7 +8,7 @@ function init(){
 		var flag = data.flag;
 		var error_info = data.error_info;
 		
-		if(flag == "1"){//正确
+		if(flag == "1"){
 			var result = data.results[0];
 			if(result.ip){
 				$("#ip").text(result.ip);
@@ -29,35 +28,50 @@ function init(){
 			if(result.device_arr){
 				showCurrentDev(result.device_arr);
 			}
-		}else{//错误
+		}else{
 		    Alert(mifi_translate(error_info)); 
 		}
 	});
 }
 
 function showCurrentDev(deviceAttr){
-	if(deviceAttr == "" || deviceAttr == undefined){
+	if(!deviceAttr || !deviceAttr.length){
 		return;
 	}
-	var html = "";
-	for(var i = 0;i < deviceAttr.length;i++){
-		html += '<tr><th>' + i+1 +'</th><th>' + deviceAttr[i].name + '</th><th>' + deviceAttr[i].ip
-		      + '</th><th>' + deviceAttr[i].mac + '</th><th>' + deviceAttr[i].media + '</th></tr>';
+
+	var $tbody = $("#table tbody");
+	if ($tbody.length === 0) {
+		$tbody = $("<tbody>").appendTo("#table");
+	} else {
+		$tbody.empty();
 	}
+
+	for(var i = 0; i < deviceAttr.length; i++){
+		var dev = deviceAttr[i] || {};
+		var $tr = $("<tr>");
+		$("<td>").text(i + 1).appendTo($tr);
+		$("<td>").text(dev.name || "-").appendTo($tr);
+		$("<td>").text(dev.ip || "-").appendTo($tr);
+		$("<td>").text(dev.mac || "-").appendTo($tr);
+		$("<td>").text(dev.media || "-").appendTo($tr);
+		$tr.appendTo($tbody);
+	}
+
 	$("#list").show();
-	$("#table").append(html);
 }
 
 $("#apply").bind('click', function (e) {
+    e.preventDefault();
     var param = { funcNo: 1012, dns1: $("#dns1").val(), dns2: $("#dns2").val() };
 	request(param,function(data){
 		var flag = data.flag;
 		var error_info = data.error_info;
 		
-		if(flag == "1"){//正确
+		if(flag == "1"){
+			Alert(mifi_translate('pass') || 'Saved');
 			return;
-		}else{//错误
-			alert(error_info);
+		}else{
+			Alert(mifi_translate(error_info));
 		}
 	});
 });

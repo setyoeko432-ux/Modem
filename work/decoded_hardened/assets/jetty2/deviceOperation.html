@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Device Operation - 4G Modem</title>
+  <title>Device Operation - Mifi Control Center</title>
   <link rel="stylesheet" href="css/m3-theme.css">
   <link rel="stylesheet" href="css/layer.css">
   <script src="./js/m3-theme.js"></script>
@@ -21,44 +21,39 @@
   <div style="max-width: 800px; margin: 0 auto;">
     <!-- Page Header -->
     <div style="margin-bottom: 24px;">
-      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);" lang="Device Operation">Device Operations</h1>
-      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">System restart and factory reset operations</p>
+      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);" lang="Device Operation">Device Operations &amp; Maintenance</h1>
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">System restart and maintenance security policy</p>
     </div>
 
-    <!-- Operations Card -->
+    <!-- Security Policy Banner Card -->
     <div class="m3-card">
       <div class="m3-card-header">
         <div class="m3-card-title">
-          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8C6.25 13.93 6 12.99 6 12c0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.87.7 1.81.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>
-          <span lang="Device Operation">System Actions</span>
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8Messz"/></svg>
+          <span>Security Hardened Policy Notice</span>
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        <!-- Reboot Row -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant);">
-          <div>
-            <div class="m3-title-medium" style="font-weight: 600;" lang="Device Restart">Restart Device</div>
-            <div class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Reboot the modem hardware and wireless interfaces</div>
-          </div>
-          <input type="submit" id="restart" class="m3-btn m3-btn-tonal" value="Restart" lang="Restart">
-        </div>
-
-        <!-- Factory Reset Row -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div class="m3-title-medium" style="font-weight: 600; color: var(--md-sys-color-error);" lang="FactoryReset">Factory Reset</div>
-            <div class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Reset all configurations to factory default settings</div>
-          </div>
-          <input type="submit" id="factory" class="m3-btn m3-btn-danger" value="Factory Reset" lang="Factory Reset">
-        </div>
+      <div class="m3-chip m3-chip-warning" style="width: 100%; height: auto; padding: 12px 16px; margin-bottom: 16px;">
+        <svg class="m3-icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        <span>Remote restart, factory reset, and bootloader triggers are default-disabled on the server for device security.</span>
       </div>
 
-      <!-- Loading Banner -->
-      <div id="content2" style="display: none; margin-top: 20px; padding: 16px; border-radius: var(--md-sys-shape-corner-m); background-color: var(--md-sys-color-warning-container); color: var(--md-sys-color-on-warning-container);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span class="m3-status-dot m3-status-dot-pulse"></span>
-          <span class="m3-title-medium" lang="Restarting,please wait">Restarting modem, please wait...</span>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="m3-info-row" style="padding: 12px 0; border-bottom: 1px solid var(--md-sys-color-outline-variant);">
+          <div>
+            <div class="m3-title-medium" style="font-weight: 600;" lang="Device Restart">Remote Device Reboot (`funcNo: 1013`)</div>
+            <div class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Disabled via server Guard default-deny policy (PR #1 security hardening).</div>
+          </div>
+          <span class="m3-chip m3-chip-error">DISABLED (403)</span>
+        </div>
+
+        <div class="m3-info-row" style="padding: 12px 0;">
+          <div>
+            <div class="m3-title-medium" style="font-weight: 600; color: var(--md-sys-color-error);" lang="FactoryReset">Remote Factory Reset (`funcNo: 1014`)</div>
+            <div class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Disabled via server Guard default-deny policy (PR #1 security hardening).</div>
+          </div>
+          <span class="m3-chip m3-chip-error">DISABLED (403)</span>
         </div>
       </div>
     </div>

@@ -8,27 +8,54 @@ var RM_TEXT = {
 };
 
 function renderSessions(rows) {
-    var body = $("#sessions tbody");
-    body.empty();
-    body.append("<tr><th>Address</th><th>Signed in</th><th>Idle</th><th></th></tr>");
+    var $thead = $("#sessions thead");
+    if ($thead.length === 0) {
+        $thead = $("<thead>").prependTo("#sessions");
+    }
+    $thead.empty();
+    var $headerTr = $("<tr>");
+    $("<th>").text("Address").appendTo($headerTr);
+    $("<th>").text("Signed in").appendTo($headerTr);
+    $("<th>").text("Idle").appendTo($headerTr);
+    $("<th>").text("Action").appendTo($headerTr);
+    $headerTr.appendTo($thead);
+
+    var $tbody = $("#sessions tbody");
+    if ($tbody.length === 0) {
+        $tbody = $("<tbody>").appendTo("#sessions");
+    }
+    $tbody.empty();
+
+    if (!rows || !rows.length) {
+        var $emptyTr = $("<tr>");
+        $("<td colspan='4'>").text("No active sessions").appendTo($emptyTr);
+        $emptyTr.appendTo($tbody);
+        return;
+    }
+
     for (var i = 0; i < rows.length; i++) {
         var r = rows[i];
-        var tr = $("<tr></tr>");
-        tr.append($("<td></td>").text(r.address + (r.current == "1" ? " (this browser)" : "")));
-        tr.append($("<td></td>").text(Math.round(r.ageSeconds / 60) + " min ago"));
-        tr.append($("<td></td>").text(Math.round(r.idleSeconds / 60) + " min"));
-        var cell = $("<td></td>");
+        var $tr = $("<tr>");
+        var addrText = (r.address || "Unknown") + (r.current == "1" ? " (this browser)" : "");
+        $("<td>").text(addrText).appendTo($tr);
+        $("<td>").text(Math.round((r.ageSeconds || 0) / 60) + " min ago").appendTo($tr);
+        $("<td>").text(Math.round((r.idleSeconds || 0) / 60) + " min").appendTo($tr);
+
+        var $cell = $("<td>");
         if (r.current != "1") {
-            var btn = $('<input type="button" class="btn" value="Sign out" />');
+            var $btn = $("<input>")
+                .attr({ type: "button", class: "m3-btn m3-btn-outlined", value: "Revoke" });
             (function(id) {
-                btn.bind("click", function() {
+                $btn.on("click", function() {
                     request({funcNo: 1063, id: id}, function(data) { loadSessions(); });
                 });
             })(r.id);
-            cell.append(btn);
+            $cell.append($btn);
+        } else {
+            $("<span>").addClass("m3-chip m3-chip-success").text("Active").appendTo($cell);
         }
-        tr.append(cell);
-        body.append(tr);
+        $tr.append($cell);
+        $tbody.append($tr);
     }
 }
 
@@ -51,36 +78,47 @@ function loadPrefs() {
     });
 }
 
-$("#newCode").bind("click", function() {
-    var pwd = $("#confirmPwd").val();
-    if (pwd == "") { Alert("Enter your current password first."); return; }
-    request({funcNo: 1067, password: pwd}, function(data) {
-        $("#confirmPwd").val("");
-        if (data.flag == "1" && data.results[0]) {
-            $("#recoveryValue").text(data.results[0].recoveryCode);
-            $("#recoveryBox").show();
-            $("#recoveryStatus").text("A recovery code is set. Any older code no longer works.");
+function savePrefs() {
+    var p = {
+        lang: $("#pLang").val(),
+        theme: $("#pTheme").val(),
+        refreshSeconds: parseInt($("#pRefresh").val(), 10) || 5,
+        speedUnit: $("#pUnit").val()
+    };
+    request({funcNo: 1065, prefs: p}, function(data) {
+        if (data.flag == "1") {
+            Alert("Preferences saved.");
+            if (p.theme === "dark" || p.theme === "light") {
+                if (window.M3Theme) { window.M3Theme.setTheme(p.theme); }
+            }
         } else {
-            Alert(RM_TEXT[data.error_info] || data.error_info);
+            Alert(RM_TEXT[data.error_info] || data.error_info || "Could not save.");
         }
     });
-});
+}
 
-$("#savePrefs").bind("click", function() {
-    var n = parseInt($("#pRefresh").val(), 10);
-    if (isNaN(n) || n < 2 || n > 300) { Alert(RM_TEXT["INVALID_INPUT:refreshSeconds"]); return; }
-    var prefs = {lang: $("#pLang").val(), theme: $("#pTheme").val(), refreshSeconds: n, speedUnit: $("#pUnit").val()};
-    request({funcNo: 1065, prefs: prefs}, function(data) {
-        Alert(data.flag == "1" ? "Saved." : (RM_TEXT[data.error_info] || data.error_info));
+function newCode() {
+    var pwd = $("#confirmPwd").val();
+    if (pwd == "") { Alert("Enter your current password first."); return; }
+    request({funcNo: 1067, pwd: pwd}, function(data) {
+        if (data.flag == "1" && data.results && data.results[0] && data.results[0].code) {
+            $("#recoveryValue").text(data.results[0].code);
+            $("#recoveryBox").show();
+            $("#confirmPwd").val("");
+            loadPrefs();
+        } else {
+            Alert(RM_TEXT[data.error_info] || data.error_info || "Could not create recovery code.");
+        }
     });
-});
-
-$("#logout").bind("click", function() {
-    request({funcNo: 1061}, function(data) { window.top.location = "index.html"; });
-});
+}
 
 $(function() {
-    $("body").show();
     loadSessions();
     loadPrefs();
+    $("#logout").on("click", function() {
+        request({funcNo: 1061}, function() { window.location = "index.html"; });
+    });
+    $("#savePrefs").on("click", savePrefs);
+    $("#newCode").on("click", newCode);
+    $("body").show();
 });
