@@ -32,6 +32,14 @@ public final class Prefs {
                 if (n < 2 || n > 300) { return key; }
             } else if ("lastPage".equals(key)) {
                 if (!(value instanceof String) || !pageName((String) value)) { return key; }
+            } else if ("seedColor".equals(key)) {
+                if (!(value instanceof String) || !hexColor((String) value)) { return key; }
+            } else if ("dataLimitMB".equals(key)) {
+                long n = asLong(value);
+                if (n < 0 || n > 10000000L) { return key; }
+            } else if ("resetDay".equals(key)) {
+                long n = asLong(value);
+                if (n < 1 || n > 28) { return key; }
             } else if ("deviceNames".equals(key)) {
                 String bad = validateNames(value);
                 if (bad != null) { return key; }
@@ -59,7 +67,7 @@ public final class Prefs {
             while (keys.hasNext()) {
                 String key = keys.next();
                 Object value = update.opt(key);
-                if ("refreshSeconds".equals(key)) {
+                if ("refreshSeconds".equals(key) || "dataLimitMB".equals(key) || "resetDay".equals(key)) {
                     value = Long.valueOf(asLong(value));
                 }
                 current.put(key, value);
@@ -92,6 +100,18 @@ public final class Prefs {
         } catch (Exception exception) {
             return -1L;
         }
+    }
+
+    private static boolean hexColor(String value) {
+        if (value.length() != 7 || value.charAt(0) != '#') {
+            return false;
+        }
+        for (int i = 1; i < 7; i++) {
+            if (Character.digit(value.charAt(i), 16) < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean pageName(String name) {

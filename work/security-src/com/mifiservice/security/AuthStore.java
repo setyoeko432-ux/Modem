@@ -35,6 +35,14 @@ public final class AuthStore {
     }
 
     static synchronized JSONObject read() {
+        return readFile(file);
+    }
+
+    static synchronized boolean write(JSONObject value) {
+        return writeFile(file, value);
+    }
+
+    static synchronized JSONObject readFile(File file) {
         if (file == null || !file.isFile() || file.length() > MAX_BYTES) {
             return new JSONObject();
         }
@@ -56,7 +64,7 @@ public final class AuthStore {
         }
     }
 
-    static synchronized boolean write(JSONObject value) {
+    static synchronized boolean writeFile(File file, JSONObject value) {
         if (file == null) {
             return false;
         }

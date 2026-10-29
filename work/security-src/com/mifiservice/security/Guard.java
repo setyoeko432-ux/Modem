@@ -26,6 +26,11 @@ public final class Guard {
     public static boolean preflight(HttpServletRequest request, HttpServletResponse response) {
         LOGIN_USER.remove();
         REMEMBER.remove();
+        try {
+            UsageTracker.ensureStarted();
+        } catch (Throwable ignored) {
+            // tracking is optional; never block a request because of it
+        }
         if (request == null || response == null) {
             return false;
         }
@@ -252,6 +257,8 @@ public final class Guard {
             case 1064:
             case 1065:
             case 1067:
+            case 1068:
+            case 1069:
                 return true;
             default:
                 return false;

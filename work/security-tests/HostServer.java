@@ -36,6 +36,13 @@ public final class HostServer {
         File authFile = File.createTempFile("host_auth", ".json");
         authFile.delete();
         com.mifiservice.security.AuthStore.setFile(authFile);
+        File usageFile = File.createTempFile("host_usage", ".json");
+        usageFile.delete();
+        com.mifiservice.security.UsageTracker.setFileForTests(usageFile);
+        android.net.wifi.WifiConfiguration wifi = new android.net.wifi.WifiConfiguration();
+        wifi.SSID = "\"UZ801-TEST\"";
+        wifi.preSharedKey = "\"host-wifi-key-1234\"";
+        com.mifiservice.device.WifiApController.configuration = wifi;
         MifiConfiguration cfg = new MifiConfiguration();
         cfg.loginPassword = args.length > 2 ? args[2] : "admin";
         MifiConfiguration.instance = cfg;
@@ -59,6 +66,16 @@ public final class HostServer {
 
     static void route(HttpExchange ex, File root) throws Exception {
         String path = ex.getRequestURI().getPath();
+        if (path.equals("/__test/seed-usage")) {            // harness only: fabricate 30 days of history
+            long now = System.currentTimeMillis() / 1000L, base = 1000000000L;
+            com.mifiservice.security.UsageTracker.sample(base, base / 4, now - 31 * 86400L);
+            for (int i = 30; i >= 0; i--) {
+                base += (200L + (i * 37L) % 900L) * 1024L * 1024L;
+                com.mifiservice.security.UsageTracker.sample(base, base / 4, now - i * 86400L);
+            }
+            ex.sendResponseHeaders(204, -1);
+            return;
+        }
         if (path.equals("/ajax") && ex.getRequestMethod().equals("POST")) {
             ajax(ex);
             return;

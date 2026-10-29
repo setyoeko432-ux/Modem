@@ -120,6 +120,7 @@ public final class Validator {
                 return PasswordPolicy.check(object.optString("newpwd", null), null);
             }
             case 1067:
+            case 1069:
                 return requireSafeString(object, "password", 1, AuthConfig.OLD_PASSWORD_MAX, false, "password");
             case 1053:
                 return requireInt(object, "type", 0, 3);

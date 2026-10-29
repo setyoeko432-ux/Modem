@@ -9,7 +9,7 @@ cleanup() { [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null || true; rm -
 trap cleanup EXIT
 
 javac -nowarn -d "$OUT" $(find security-src security-stubs security-test-stubs security-tests -name '*.java')
-for t in SecurityTests GuardFlowTests AuthFlowTests; do java -cp "$OUT" "$t"; done
+for t in SecurityTests GuardFlowTests AuthFlowTests UsageTests; do java -cp "$OUT" "$t"; done
 
 run_e2e() { # script port password
   java -cp "$OUT" HostServer decoded_hardened/assets/jetty2 "$2" "$3" >"$OUT/host.log" 2>&1 &

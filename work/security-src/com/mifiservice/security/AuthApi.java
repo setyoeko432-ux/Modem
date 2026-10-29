@@ -20,12 +20,14 @@ public final class AuthApi {
     public static final int SET_PREFS = 1065;
     public static final int RECOVER = 1066;
     public static final int NEW_RECOVERY_CODE = 1067;
+    public static final int USAGE = 1068;
+    public static final int WIFI_SHARE = 1069;
 
     private AuthApi() {
     }
 
     public static boolean owns(int funcNo) {
-        return funcNo >= WHOAMI && funcNo <= NEW_RECOVERY_CODE;
+        return funcNo >= WHOAMI && funcNo <= WIFI_SHARE;
     }
 
     /** Writes the full response. Caller has already authenticated the request. */
@@ -117,6 +119,38 @@ public final class AuthApi {
                         item.put("recoveryCode", code); // shown once; only a salted hash is kept
                         results.put(item);
                     }
+                    break;
+                }
+                case USAGE:
+                    results.put(UsageTracker.snapshot());
+                    break;
+                case WIFI_SHARE: {
+                    String user = "admin";
+                    if (!SessionManager.loginAllowed(request.getRemoteAddr(), user)) {
+                        response.addHeader("Retry-After", String.valueOf(
+                                SessionManager.retryAfterSeconds(request.getRemoteAddr(), user)));
+                        writeStatus(response, 429, "RATE_LIMITED");
+                        return;
+                    }
+                    if (!currentPasswordMatches(body.optString("password", ""))) {
+                        SessionManager.recordLoginFailure(request.getRemoteAddr(), user);
+                        flag = "0";
+                        error = "INVALID_INPUT:password";
+                        break;
+                    }
+                    String[] wifi = WifiShare.read();
+                    if (wifi == null) {
+                        flag = "0";
+                        error = "UNAVAILABLE";
+                        break;
+                    }
+                    JSONObject item = new JSONObject();
+                    item.put("ssid", wifi[0]);
+                    item.put("security", wifi[1]);
+                    item.put("wifiKey", wifi[2]);
+                    results.put(item);
+                    response.addHeader("Cache-Control", "no-store");
+                    response.addHeader("Pragma", "no-cache");
                     break;
                 }
                 default:
