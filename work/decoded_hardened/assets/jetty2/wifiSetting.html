@@ -1,143 +1,159 @@
-<!--  <?xml version="1.0" encoding="UTF-8" ?>  -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
-  <meta http-equiv="Content-Type" content="text/html; charset=gb2312"> <!--support Chinese-->
-<title>Wi-Fi Setting</title>
-<link rel="stylesheet" type="text/css" href="css/common.css" />
-<link rel="stylesheet" type="text/css" href="css/layer.css" />
-	<script src="./js/plugins/jquery.js" type="text/javascript"></script>
-	<script src="./js/utils/ajax.js" type="text/javascript"></script>
-	<script src="./js/plugins/json2.js" type="text/javascript"></script>
-	<script src="./js/plugins/layer.js" type="text/javascript"></script>
-	<script src="./js/utils/alert.js" type="text/javascript"></script>
-	<script src="./js/plugins/jquerysession.js" type="text/javascript"></script>
-	<script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
-	<script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wi-Fi Settings - 4G Modem</title>
+  <link rel="stylesheet" href="css/m3-theme.css">
+  <link rel="stylesheet" href="css/layer.css">
+  <script src="./js/m3-theme.js"></script>
+  <script src="./js/plugins/jquery.js" type="text/javascript"></script>
+  <script src="./js/utils/ajax.js" type="text/javascript"></script>
+  <script src="./js/plugins/json2.js" type="text/javascript"></script>
+  <script src="./js/plugins/layer.js" type="text/javascript"></script>
+  <script src="./js/utils/alert.js" type="text/javascript"></script>
+  <script src="./js/plugins/jquerysession.js" type="text/javascript"></script>
+  <script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
+  <script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
+  <style>
+    .m3-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .m3-info-row:last-child {
+      border-bottom: none;
+    }
+  </style>
 </head>
 
-<body style="display:none">
-<!--  <div id="wifi" class="section">  -->
-<div id="main">
-  <div class="block">
-  <h2><span lang="WI-FI Setting">WI-FI Setting</span>
-  		<span style="color:#ff0000" lang="( After changing settings , the WIFI will restart automatically ! )">( After changing settings , the WIFI will restart automatically ! )</span></h2>
-		<div class="content" id="content">	
+<body>
+  <div style="max-width: 1000px; margin: 0 auto;">
+    <!-- Page Header -->
+    <div style="margin-bottom: 24px;">
+      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);" lang="WI-FI Setting">Wi-Fi &amp; Security Settings</h1>
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Configure wireless SSID, broadcast, security mode, and password</p>
+    </div>
 
- <table>
+    <!-- Alert Warning Chip -->
+    <div class="m3-chip m3-chip-warning" style="width: 100%; margin-bottom: 20px; height: auto; padding: 12px 16px;">
+      <svg class="m3-icon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      <span lang="( After changing settings , the WIFI will restart automatically ! )">Changing Wi-Fi settings will restart the wireless interface automatically.</span>
+    </div>
 
+    <!-- Basic Wi-Fi Info & SSID Card -->
+    <div class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 3C7.95 3 4.21 4.34 1.2 6.6L3 9c2.53-1.89 5.66-3 9-3s6.47 1.11 9 3l1.8-2.4C19.79 4.34 16.05 3 12 3zm0 6c-2.88 0-5.54.91-7.72 2.45L6 13.8c1.68-1.12 3.73-1.8 6-1.8s4.32.68 6 1.8l1.72-2.35C17.54 9.91 14.88 9 12 9zm0 6c-1.78 0-3.41.52-4.8 1.41L12 21l4.8-4.59C15.41 15.52 13.78 15 12 15z"/></svg>
+          <span>Wi-Fi Network Configuration</span>
+        </div>
+      </div>
 
-  <tr><td lang="Status">Status</td><td id="status">ON</td></tr>
+      <div style="margin-bottom: 16px;">
+        <div class="m3-info-row">
+          <span class="m3-label" lang="Status">Status</span>
+          <span class="m3-chip m3-chip-success" id="status">ON</span>
+        </div>
+        <div class="m3-info-row">
+          <span class="m3-label">WLAN IP</span>
+          <span class="m3-body-medium" id="ip" style="font-weight: 600;">192.168.100.1</span>
+        </div>
+        <div class="m3-info-row">
+          <span class="m3-label" lang="MAC">MAC Address</span>
+          <span class="m3-body-medium" id="mac" style="font-weight: 600;">AB:CD:EF:GH:IJ</span>
+        </div>
+      </div>
 
-  
-  <tr><td>IP</td><td id="ip">113.53.46.245</td></tr>
-  <tr ><td lang="MAC">MAC</td><td id="mac">AB:CD:EF:GH:IJ</td></tr>
+      <div class="m3-grid">
+        <div class="m3-form-group">
+          <label class="m3-label" for="ssid">Network Name (SSID)</label>
+          <input id="ssid" type="text" class="m3-input" maxlength="32" value="MIFI-4G">
+        </div>
 
-  <tr><td>SSID</td><td><input id="ssid" type="text"  maxlength="32" value="MIFI-xxx"></input></td></tr>
-   <tr>
-                    <td lang="Max Station">Max Station</td>
+        <div class="m3-form-group">
+          <label class="m3-label" for="select2" lang="Max Station">Max Connected Devices (Stations)</label>
+          <select id="select2" name="wifi.set" class="m3-select">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10" selected>10</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-                     <td>
-                    <select id="select2" name="wifi.set">
-                        <option value="0" lang="0"></option>
-                        <option value="1" lang="1"></option>
-                        <option value="2" lang="2"></option>
-                        <option value="3" lang="3"></option>
-                        <option value="4" lang="4"></option>
-                        <option value="5" lang="5"></option>
-                        <option value="6" lang="6"></option>
-                        <option value="7" lang="7"></option>
-                        <option value="8" lang="8"></option>
-                        <option value="9" lang="9"></option>
-                         <option value="10" lang="10"></option>
-                    </select>
-                     </td>
-                </tr> 
+    <!-- Wi-Fi Security Card -->
+    <div class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <span lang="WI-FI Security">Wi-Fi Security &amp; Encryption</span>
+        </div>
+      </div>
 
-   
-</table>
+      <div class="m3-grid">
+        <div class="m3-form-group">
+          <label class="m3-label" for="ecrytion" lang="Encryption">Security Mode / Encryption</label>
+          <select id="ecrytion" name="wifi.encryption" class="m3-select">
+            <option value="0">None (Open)</option>
+            <option value="1">WPA Personal TKIP</option>
+            <option value="2">WPA Personal CCMP</option>
+            <option value="3">WPA2 Personal TKIP</option>
+            <option value="4" selected>WPA2 Personal CCMP (AES)</option>
+          </select>
+        </div>
 
-	
+        <div class="m3-form-group">
+          <label class="m3-label" for="pwd" lang="Password">Wi-Fi Password / Passphrase</label>
+          <div class="m3-input-wrapper">
+            <input id="pwd" name="wifi.passPhrase" type="password" class="m3-input" maxlength="63" value="11111111">
+            <button type="button" id="m3-wifi-pwd-toggle" class="m3-input-icon-btn" title="Toggle Wi-Fi Password">
+              <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+          </div>
+          <span class="m3-helper-text">Allowed characters: '0'-'9', 'a'-'z', 'A'-'Z' (8-63 characters)</span>
+        </div>
+      </div>
 
+      <!-- Loading Indicators -->
+      <div id="content2" style="display: none; padding: 12px; margin-top: 12px;">
+        <div class="m3-chip m3-chip-warning">
+          <span class="m3-status-dot m3-status-dot-pulse"></span>
+          <span lang="Setting WIFI,please wait">Applying Wi-Fi settings, please wait...</span>
+        </div>
+      </div>
+      <div id="content3" style="display: none; padding: 12px; margin-top: 12px;">
+        <div class="m3-chip m3-chip-warning">
+          <span class="m3-status-dot m3-status-dot-pulse"></span>
+          <span>Saving security configuration, please wait...</span>
+        </div>
+      </div>
 
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <input type="submit" id="SaveSubmit" class="m3-btn m3-btn-primary" value="Save Settings" lang="Save">
+      </div>
+    </div>
+  </div>
 
-<div width="60%" style="width:60%!important;" class="component block" id="content1">
-
-
- <!--<table style="margin-left:10px;">
-
-  <tr>
-	  <td>
-	  	<input type="submit" id="apply" class="btn btn-primary" value="Change Wi-Fi Settings" lang="Change Wi-Fi Settings"></input>
-	  </td>	  
-  </tr>
- </table>  -->
- 
-     </div>	 <!-- end of content  -->	
-<div width="0%" style="width:60%!important;" class="component block" id="content2">
- <table style="margin-left:50px;">
-  <tr></tr><tr></tr><tr></tr>
-  <tr><span style="color:#ff0000;margin-left:50px;" lang="Setting WIFI,please wait">Setting WIFI,please wait</span>
-      <img id="loadingImg" src="img/loading.gif"/>
-  
-  </tr>
- </table>  
- </div>	
-     
-		 </div>	 <!-- end of content  -->	 
-
-
-
-  <h2><span lang="WI-FI Security">WI-FI Security</span>
-  <span style="color:#ff0000" lang="( After saving settings , the WIFI will restart automatically ! )">( After saving settings , the WIFI will restart automatically ! )</span></h2>
-		<div class="content" id="Div1">	
-		<table>
-			<tr><td width="24%" lang="Encryption">Encryption</td><td>
-			   <select id="ecrytion" name="wifi.encryption">
-			    <option value="0" selected="selected">None</option>
-			    <option value="1">WPA Personal TKIP</option>
-			    <option value="2">WPA Personal CCMP</option>
-			    <option value="3">WPA2 Personal TKIP</option>
-			    <option value="4">WPA2 Personal CCMP</option>
-			   </select>
-  	 </td></tr>
-  	 
-  	 <tr><td width="24%" lang="Password">Password</td><td> <input id="pwd" name ="wifi.passPhrase" maxlength="63" value="11111111"></input>
-      <span width="54%" lang=" ('0'-'9','a'-'z','A'-'Z') (8-63 characters)"> ('0'-'9','a'-'z','A'-'Z') (8-63 characters)</span></td></tr>
-
-	 
-		</table>
- 		
-		 </div>	 <!-- end of content  -->	 
-
-
-<div width="0%" style="width:60%!important;" class="component block" id="content3">
- <table style="margin-left:50px;">
-  <tr></tr><tr></tr><tr></tr>
-  <tr><span style="color:#ff0000;margin-left:50px;" lang="Setting WIFI,please wait">Setting WIFI,please wait</span>
-      <img id="Img1" src="img/loading.gif"/>
-  
-  </tr>
- </table>  
- </div>	
-		<div class="content">
-
-		      <table>
-		
-						<tr>
-							<td>&nbsp;</td>
-							<td><input type="submit" id="SaveSubmit" class="btn btn-primary" value="Save" lang="Save"></input></td>
-						</tr>
-				  </table>
-		</div>	
-   </div><!-- end of block  -->	 
-	
-	
-	
-	
-</div>       <!--  end of main  -->
-
+  <script src="./js/wifiSetting.js" type="text/javascript"></script>
+  <script>
+    $(function() {
+      $('#m3-wifi-pwd-toggle').on('click', function() {
+        var input = $('#pwd');
+        var type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+      });
+    });
+  </script>
 </body>
-<script src="./js/wifiSetting.js" type="text/javascript"></script>
 </html>

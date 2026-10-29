@@ -1,153 +1,178 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <!--support Chinese-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - 4G Modem Dashboard</title>
+  <link rel="stylesheet" href="css/m3-theme.css">
+  <link rel="stylesheet" href="css/layer.css">
+  <script src="./js/m3-theme.js"></script>
+  <script src="./js/plugins/jquery.js" type="text/javascript"></script>
+  <script src="./js/utils/ajax.js" type="text/javascript"></script>
+  <script src="./js/plugins/json2.js" type="text/javascript"></script>
+  <script src="./js/plugins/layer.js" type="text/javascript"></script>
+  <script src="./js/utils/alert.js" type="text/javascript"></script>
+  <script src="./js/plugins/jquerysession.js" type="text/javascript"></script>
+  <script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
+  <script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
+  <style>
+    .m3-login-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 30%, var(--md-sys-color-surface-container-low), var(--md-sys-color-surface));
+      padding: 24px 16px;
+    }
 
-	<title>4G Modem</title> 
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" type="text/css" href="css/layer.css" />
-	<script src="./js/plugins/jquery.js" type="text/javascript"></script>
-	<script src="./js/utils/ajax.js" type="text/javascript"></script>
-	<script src="./js/plugins/json2.js" type="text/javascript"></script>
-	<script src="./js/plugins/layer.js" type="text/javascript"></script>
-	<script src="./js/utils/alert.js" type="text/javascript"></script>
-	<script src="./js/plugins/jquerysession.js" type="text/javascript"></script>
-	<script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
-	<script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
-	
-	<style>
-		body {
-			/*width: 100% !important;*/
-			 
-            min-width: 956px;
-            padding-bottom: 30px;
-		}
-		#middle {
-			/*padding: 28px 0;*/
-			min-height:610px;
-			/*border: 1px solid #f7f7f7;*/
-			/*background: #ecf0f5;*/
-			/*_width: 368px;
-			_height:700px;*/
-			
-		}
-		div.block {
-			margin: 0 300px;
-			width: 368px;
-		}
-		div.content {
-			margin: 30px;
-			width: 308px;
-		}
-		div.content table {
-			width: 100%;
-		}
-		div.content table td {
-			padding: 5px 2px;
-		}
-		div.content table td * {
-			vertical-align: middle;
-		}
-	</style>
+    .m3-login-card {
+      width: 100%;
+      max-width: 420px;
+      background-color: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-sys-shape-corner-xl);
+      padding: 32px 28px;
+      box-shadow: var(--md-sys-elevation-2);
+    }
 
+    .m3-login-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .m3-login-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--md-sys-shape-corner-l);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .m3-login-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .m3-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .m3-checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--md-sys-color-primary);
+      cursor: pointer;
+    }
+
+    .m3-recovery-panel {
+      margin-top: 20px;
+      padding: 16px;
+      background-color: var(--md-sys-color-surface-container-low);
+      border-radius: var(--md-sys-shape-corner-m);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+  </style>
 </head>
 
+<body class="m3-login-body">
+  <div class="m3-login-card">
+    <!-- Top Utility Bar: Language & Theme -->
+    <div class="m3-login-top-bar">
+      <select id="select" name="select" class="m3-select" style="width: 120px; height: 36px; padding: 0 8px; font-size: 13px;">
+        <option id="en" value="0" selected>English</option>
+        <option id="zh" value="1">Chinese</option>
+        <option id="ru" value="2">Russian</option>
+      </select>
+      <button id="m3-theme-toggle-btn" class="m3-btn m3-btn-icon" title="Toggle Theme">
+        <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-5.4-5.4c0-1.81 .89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3z"/></svg>
+      </button>
+    </div>
 
+    <!-- Login Header -->
+    <div class="m3-login-header">
+      <div class="m3-login-avatar">
+        <svg class="m3-icon" style="width: 32px; height: 32px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-6h2v6zm0-8h-2V8h2v2z"/></svg>
+      </div>
+      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);">4G Modem Portal</h1>
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">Sign in to manage router configuration</p>
+    </div>
 
-<body style="display:none;">
-		
+    <!-- Login Form -->
+    <form id="frm" name="gotomain" action="main.html" method="post">
+      <div class="m3-form-group">
+        <label class="m3-label" for="username" lang="Username:">Username</label>
+        <input type="text" name="username" id="username" class="m3-input" placeholder="admin" autocomplete="username">
+      </div>
 
- 
-	  <div id="header" class="container">
-           <div id="manageBar" class="row">
-                <div id="manageContainer" class="col-xs-12 text-right">
-                		<td>
-		                    <select id="select" name="select" style= "margin-right: 25px;background-color: #8dc63f;">
-			                <option id="en" value="0" selected="selected">English</option>
-		                     <option id="zh" value="1">Chinese</option>
-		                     <option id="ru" value="2">Russion</option>
-			                </select>
-		               </td>                 
-                  <!--  <select id="language" class="marginright10" data-bind="options: languages, value: currentLan, optionsText: 'text', optionsValue: 'value', event:{ change: langChangeHandler}"></select>-->
-                </div>
-            </div>	
-       <div id="langLogoBar" class="row">
-            <div class="col-xs-4">
-                <a href="index.html"><img src="img/header.jpg"/></a>
-            </div>
-          
-      </div>  
-		<!-- <div style="float:left;padding-top: 10px;padding-bottom: 1px;height:110px;line-height:26px;background: url(../img/header_bg.png);margin-top: 0px;margin-bottom: 0px;">-->
-		<!-- <a href="index.html" style="float:left;padding-left:10px;height:30px;line-height:26px;"><img src="img/header.jpg" /></a>
-		 </div>	-->
-	  </div>            <!--end of header-->
-	
+      <div class="m3-form-group">
+        <label class="m3-label" for="password" lang="Password:">Password</label>
+        <div class="m3-input-wrapper">
+          <input type="password" name="password" id="password" class="m3-input" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" id="m3-pwd-toggle" class="m3-input-icon-btn" title="Toggle password visibility">
+            <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          </button>
+        </div>
+      </div>
 
-	
-	<div id="middle" class="container login-page-bg">
-		<div class="block">
-				<div class="content" style="position: absolute; top:200px; left: 30%;  ">
-					<form name="gotomain" action="main.html" method="post">
-							<table id="frm" class="list">
-								<tbody>
-									<tr>
-										<td align="right" width="35%" lang="Username:">Username:</td>
-										<td width="65%"><input type="text" name="username" id="username" style="width:120px;"/></td>
-									</tr>
-									<tr>
-										<td align="right" lang="Password:">Password:</td>
-										<td><input type="password" name="password" id="password" style="width:120px;"/></td>
-									</tr>
-									<tr>
-										<td></td>
-										<td><label style="font-size:12px;"><input type="checkbox" id="remember" /> <span id="rememberLabel">Keep me signed in (14 days)</span></label></td>
-									</tr>
-									<tr>
-<!--										<td align="right" width="35%" lang="Language:">Language:</td>
-										<td>
-											<select id="select" name="select" style="width:125px;">
-												<option id="en" value="0" selected="selected">English</option>
-												<option id="zh" value="1">Chinese</option>
-											</select>
-										</td>-->
-									</tr>
-									<tr>
-										<td colspan="2" align="center">
-											<input class="btn btn-primary" id="login" type="button" value="Login" lang='Login'/> &nbsp; 
-											<input class="btn btn-primary" type="reset" value="Reset" lang='Reset'/>
-										</td>
-									</tr>
-									<tr>
-										<td colspan="2" align="center" style="padding-top:10px;"><a href="#" id="forgotLink" style="font-size:12px;">Forgot password?</a></td>
-									</tr>
-									<tr class="recoveryRow" style="display:none;">
-										<td colspan="2" style="font-size:12px;color:#666;" id="recoveryHelp">Enter the recovery code you saved earlier and choose a new password.</td>
-									</tr>
-									<tr class="recoveryRow" style="display:none;">
-										<td align="right" id="codeLabel">Recovery code:</td>
-										<td><input type="text" id="recoveryCode" autocomplete="off" maxlength="40" style="width:160px;"/></td>
-									</tr>
-									<tr class="recoveryRow" style="display:none;">
-										<td align="right" id="newPwdLabel">New password:</td>
-										<td><input type="password" id="recoveryNewPwd" autocomplete="new-password" maxlength="64" style="width:160px;"/></td>
-									</tr>
-									<tr class="recoveryRow" style="display:none;">
-										<td colspan="2" align="center"><input class="btn btn-primary" id="recoverBtn" type="button" value="Reset password"/></td>
-									</tr>
-								</tbody>
-							</table>
-          </form>
-				</div>  <!--end of content-->
-			</div>    <!--end of block-->
-	</div>         <!--end of middle-->
+      <div class="m3-form-group" style="margin-bottom: 20px;">
+        <label class="m3-checkbox-label">
+          <input type="checkbox" id="remember">
+          <span id="rememberLabel">Keep me signed in (14 days)</span>
+        </label>
+      </div>
 
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <input class="m3-btn m3-btn-primary" id="login" type="button" value="Login" lang="Login" style="flex: 2; height: 44px;">
+        <input class="m3-btn m3-btn-outlined" type="reset" value="Reset" lang="Reset" style="flex: 1; height: 44px;">
+      </div>
 
-	<div id="footerindex" class="container margin-top-5" style="border-top:1px solid #dddddd;margin-top: 10px;">
-	     <span lang="Copyright &copy; 2021-2024 All rights reserved.">Copyright &copy; 2021-2024 All rights reserved.</span>&nbsp;
-		<!--<p lang=""><font color="#014872">Copyright &copy; 2021-2022 All rights reserved.</font></p>-->
-	</div>
+      <div style="text-align: center;">
+        <a href="#" id="forgotLink" style="font-size: 13px; color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500;">Forgot password?</a>
+      </div>
 
+      <!-- Recovery Section -->
+      <div class="m3-recovery-panel recoveryRow" style="display: none;">
+        <p class="m3-body-medium" id="recoveryHelp" style="margin-bottom: 12px; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">
+          Enter the recovery code you saved earlier and choose a new password.
+        </p>
+        <div class="m3-form-group">
+          <label class="m3-label" id="codeLabel" for="recoveryCode">Recovery Code</label>
+          <input type="text" id="recoveryCode" class="m3-input" placeholder="ABCDE-FGHJK-LMNPQ-RSTUV" autocomplete="off" maxlength="40">
+        </div>
+        <div class="m3-form-group">
+          <label class="m3-label" id="newPwdLabel" for="recoveryNewPwd">New Password</label>
+          <input type="password" id="recoveryNewPwd" class="m3-input" placeholder="New Password (min 12 chars)" autocomplete="new-password" maxlength="64">
+        </div>
+        <input class="m3-btn m3-btn-tonal" id="recoverBtn" type="button" value="Reset Password" style="width: 100%; margin-top: 8px;">
+      </div>
+    </form>
+  </div>
+
+  <script src="./js/index.js" type="text/javascript"></script>
+  <script>
+    // Password show/hide toggle logic
+    $(function() {
+      $('#m3-pwd-toggle').on('click', function() {
+        var input = $('#password');
+        var type = input.attr('type') === 'password' ? 'text' : 'password';
+        input.attr('type', type);
+      });
+    });
+  </script>
 </body>
-<script src="./js/index.js" type="text/javascript"></script>
 </html>

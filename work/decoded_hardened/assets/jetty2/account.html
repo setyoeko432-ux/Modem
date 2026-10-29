@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Account</title>
-  <link rel="stylesheet" type="text/css" href="css/common.css" />
-  <link rel="stylesheet" type="text/css" href="css/layer.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account & Sessions - 4G Modem</title>
+  <link rel="stylesheet" href="css/m3-theme.css">
+  <link rel="stylesheet" href="css/layer.css">
+  <script src="./js/m3-theme.js"></script>
   <script src="./js/plugins/jquery.js" type="text/javascript"></script>
   <script src="./js/utils/ajax.js" type="text/javascript"></script>
   <script src="./js/plugins/json2.js" type="text/javascript"></script>
@@ -14,53 +16,148 @@
   <script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
   <script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
   <style>
-    .card { margin-bottom: 22px; }
-    .hint { font-size: 12px; color: #666; margin: 4px 0 8px; }
-    #recoveryBox { display:none; margin-top:10px; padding:10px; border:2px solid #c60; background:#fff8e6; }
-    #recoveryValue { font-family: monospace; font-size: 20px; letter-spacing: 2px; user-select: all; }
-    table.sess td, table.sess th { padding: 4px 10px; text-align: left; }
+    #recoveryBox {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: var(--md-sys-shape-corner-m);
+      background-color: var(--md-sys-color-warning-container);
+      color: var(--md-sys-color-on-warning-container);
+      border: 1px solid var(--md-sys-color-warning);
+    }
+    #recoveryValue {
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      user-select: all;
+      margin-top: 8px;
+    }
   </style>
 </head>
-<body style="display:none;">
-<div id="main">
-  <div class="block">
-    <h2><span>Account &amp; Sessions</span></h2>
-    <div class="content" id="content">
 
-      <div class="card" id="recoveryCard">
-        <h3>Recovery code</h3>
-        <div class="hint" id="recoveryStatus">Checking...</div>
-        <div class="hint">A recovery code lets you reset the admin password from the login page if you forget it. It is shown once. Store it somewhere safe (not on the same phone or laptop only).</div>
-        <input type="password" id="confirmPwd" placeholder="Current password" maxlength="64" autocomplete="current-password" />
-        <input type="button" class="btn btn-primary" id="newCode" value="Create new recovery code" />
-        <div id="recoveryBox">
-          <div>Write this down now. It will not be shown again.</div>
-          <div id="recoveryValue"></div>
+<body>
+  <div style="max-width: 1000px; margin: 0 auto;">
+    <!-- Page Header -->
+    <div style="margin-bottom: 24px;">
+      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);">Account &amp; Sessions</h1>
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Manage admin security, sessions, and preferences</p>
+    </div>
+
+    <!-- Recovery Code Card -->
+    <div id="recoveryCard" class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v2h2v-2h2v-2h-8.35zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+          <span>Admin Recovery Code</span>
+        </div>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div class="m3-chip" id="recoveryStatus" style="margin-bottom: 8px;">Checking status...</div>
+        <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">
+          A recovery code lets you reset the admin password from the login page if you forget it. It is shown only once upon creation. Store it in a safe, secure place.
+        </p>
+      </div>
+
+      <div class="m3-form-group" style="max-width: 320px;">
+        <label class="m3-label" for="confirmPwd">Current Admin Password</label>
+        <input type="password" id="confirmPwd" class="m3-input" placeholder="Current password" maxlength="64" autocomplete="current-password">
+      </div>
+
+      <button id="newCode" class="m3-btn m3-btn-primary">
+        <svg class="m3-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Create New Recovery Code</span>
+      </button>
+
+      <div id="recoveryBox">
+        <div class="m3-title-medium" style="font-weight: 600;">Write this down now. It will not be shown again.</div>
+        <div id="recoveryValue"></div>
+      </div>
+    </div>
+
+    <!-- Active Sessions Card -->
+    <div class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M4 6h16v10H4z" fill="none"/><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+          <span>Signed-In Sessions</span>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Signed-in sessions</h3>
-        <table class="sess" id="sessions"><tbody></tbody></table>
-        <input type="button" class="btn btn-primary" id="logout" value="Log out" />
-      </div>
-
-      <div class="card">
-        <h3>Preferences</h3>
-        <div class="hint">Saved on the modem, so they follow you to any browser.</div>
-        <table>
-          <tr><td>Language</td><td><select id="pLang"><option value="en">English</option><option value="zh">Chinese</option><option value="ru">Russian</option><option value="id">Indonesian</option></select></td></tr>
-          <tr><td>Theme</td><td><select id="pTheme"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></td></tr>
-          <tr><td>Refresh every (s)</td><td><input type="text" id="pRefresh" maxlength="3" style="width:50px;" value="5" /></td></tr>
-          <tr><td>Speed unit</td><td><select id="pUnit"><option value="auto">Auto</option><option value="bps">bits/s</option><option value="Bps">bytes/s</option></select></td></tr>
+      <div class="m3-table-container" style="margin-bottom: 16px;">
+        <table class="m3-table sess" id="sessions">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>IP Address</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
         </table>
-        <input type="button" class="btn btn-primary" id="savePrefs" value="Save preferences" />
       </div>
 
+      <button id="logout" class="m3-btn m3-btn-danger">
+        <svg class="m3-icon" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+        <span>Log Out This Session</span>
+      </button>
     </div>
-    <div class="boxbot"></div>
+
+    <!-- Server Preferences Card -->
+    <div class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+          <span>Server Preferences</span>
+        </div>
+      </div>
+
+      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 16px;">
+        Preferences are stored on the modem server and automatically synced across devices.
+      </p>
+
+      <div class="m3-grid">
+        <div class="m3-form-group">
+          <label class="m3-label" for="pLang">Default Language</label>
+          <select id="pLang" class="m3-select">
+            <option value="en">English</option>
+            <option value="zh">Chinese</option>
+            <option value="ru">Russian</option>
+            <option value="id">Indonesian</option>
+          </select>
+        </div>
+
+        <div class="m3-form-group">
+          <label class="m3-label" for="pTheme">Theme Preference</label>
+          <select id="pTheme" class="m3-select">
+            <option value="auto">System / Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
+        <div class="m3-form-group">
+          <label class="m3-label" for="pRefresh">Refresh Interval (seconds)</label>
+          <input type="text" id="pRefresh" class="m3-input" maxlength="3" value="5">
+        </div>
+
+        <div class="m3-form-group">
+          <label class="m3-label" for="pUnit">Speed Unit Display</label>
+          <select id="pUnit" class="m3-select">
+            <option value="auto">Auto</option>
+            <option value="bps">bits/s</option>
+            <option value="Bps">bytes/s</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+        <button id="savePrefs" class="m3-btn m3-btn-primary">Save Preferences</button>
+      </div>
+    </div>
   </div>
-</div>
+
+  <script src="./js/account.js" type="text/javascript"></script>
 </body>
-<script src="./js/account.js" type="text/javascript"></script>
 </html>

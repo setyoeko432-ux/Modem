@@ -1,0 +1,708 @@
+/* ==========================================================================
+   Material Design 3 (Material You) Theme & Design Tokens for Modem Web UI
+   Offline-friendly, zero external CDN dependencies.
+   ========================================================================== */
+
+:root {
+  /* Seed Color: #0D9488 (Teal/Cyan - Network Modern) */
+  --md-sys-color-primary: #006A60;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #70F7E5;
+  --md-sys-color-on-primary-container: #00201C;
+
+  --md-sys-color-secondary: #4A635F;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #CCE8E2;
+  --md-sys-color-on-secondary-container: #05201C;
+
+  --md-sys-color-tertiary: #4B607C;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #D3E4FF;
+  --md-sys-color-on-tertiary-container: #041C35;
+
+  --md-sys-color-surface: #F4FBF9;
+  --md-sys-color-surface-dim: #D5DBD9;
+  --md-sys-color-surface-bright: #F4FBF9;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #EEF5F3;
+  --md-sys-color-surface-container: #E8EFE2;
+  --md-sys-color-surface-container-high: #E2E9E7;
+  --md-sys-color-surface-container-highest: #DCE4E1;
+
+  --md-sys-color-on-surface: #161D1B;
+  --md-sys-color-on-surface-variant: #3F4946;
+  --md-sys-color-outline: #6F7976;
+  --md-sys-color-outline-variant: #BEC9C5;
+
+  --md-sys-color-error: #BA1A1A;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFDAD6;
+  --md-sys-color-on-error-container: #410002;
+
+  --md-sys-color-success: #116E3A;
+  --md-sys-color-on-success: #FFFFFF;
+  --md-sys-color-success-container: #A2F5B5;
+  --md-sys-color-on-success-container: #00210C;
+
+  --md-sys-color-warning: #7B5800;
+  --md-sys-color-warning-container: #FFDEA2;
+  --md-sys-color-on-warning-container: #261900;
+
+  /* Elevation Shadows */
+  --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+  --md-sys-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
+
+  /* Shapes */
+  --md-sys-shape-corner-xs: 4px;
+  --md-sys-shape-corner-s: 8px;
+  --md-sys-shape-corner-m: 12px;
+  --md-sys-shape-corner-l: 16px;
+  --md-sys-shape-corner-xl: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* Typography */
+  --md-ref-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Dark Mode Tokens */
+[data-theme="dark"] {
+  --md-sys-color-primary: #53DBC9;
+  --md-sys-color-on-primary: #003732;
+  --md-sys-color-primary-container: #005048;
+  --md-sys-color-on-primary-container: #70F7E5;
+
+  --md-sys-color-secondary: #B0CCC6;
+  --md-sys-color-on-secondary: #1B3531;
+  --md-sys-color-secondary-container: #324B47;
+  --md-sys-color-on-secondary-container: #CCE8E2;
+
+  --md-sys-color-tertiary: #B3C8E8;
+  --md-sys-color-on-tertiary: #1C314C;
+  --md-sys-color-tertiary-container: #334863;
+  --md-sys-color-on-tertiary-container: #D3E4FF;
+
+  --md-sys-color-surface: #0E1513;
+  --md-sys-color-surface-dim: #0E1513;
+  --md-sys-color-surface-bright: #343B39;
+  --md-sys-color-surface-container-lowest: #090F0E;
+  --md-sys-color-surface-container-low: #171D1C;
+  --md-sys-color-surface-container: #1B2120;
+  --md-sys-color-surface-container-high: #252B2A;
+  --md-sys-color-surface-container-highest: #303635;
+
+  --md-sys-color-on-surface: #DEE4E1;
+  --md-sys-color-on-surface-variant: #BEC9C5;
+  --md-sys-color-outline: #889390;
+  --md-sys-color-outline-variant: #3F4946;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
+
+  --md-sys-color-success: #86DC9E;
+  --md-sys-color-on-success: #00391B;
+  --md-sys-color-success-container: #00522B;
+  --md-sys-color-on-success-container: #A2F5B5;
+
+  --md-sys-color-warning: #FFBA37;
+  --md-sys-color-warning-container: #5C4100;
+  --md-sys-color-on-warning-container: #FFDEA2;
+
+  --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.40), 0px 1px 2px 0px rgba(0, 0, 0, 0.60);
+  --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.40), 0px 1px 2px 0px rgba(0, 0, 0, 0.60);
+  --md-sys-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.40), 0px 1px 3px 0px rgba(0, 0, 0, 0.60);
+}
+
+/* System dark mode fallback */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --md-sys-color-primary: #53DBC9;
+    --md-sys-color-on-primary: #003732;
+    --md-sys-color-primary-container: #005048;
+    --md-sys-color-on-primary-container: #70F7E5;
+
+    --md-sys-color-secondary: #B0CCC6;
+    --md-sys-color-on-secondary: #1B3531;
+    --md-sys-color-secondary-container: #324B47;
+    --md-sys-color-on-secondary-container: #CCE8E2;
+
+    --md-sys-color-tertiary: #B3C8E8;
+    --md-sys-color-on-tertiary: #1C314C;
+    --md-sys-color-tertiary-container: #334863;
+    --md-sys-color-on-tertiary-container: #D3E4FF;
+
+    --md-sys-color-surface: #0E1513;
+    --md-sys-color-surface-dim: #0E1513;
+    --md-sys-color-surface-bright: #343B39;
+    --md-sys-color-surface-container-lowest: #090F0E;
+    --md-sys-color-surface-container-low: #171D1C;
+    --md-sys-color-surface-container: #1B2120;
+    --md-sys-color-surface-container-high: #252B2A;
+    --md-sys-color-surface-container-highest: #303635;
+
+    --md-sys-color-on-surface: #DEE4E1;
+    --md-sys-color-on-surface-variant: #BEC9C5;
+    --md-sys-color-outline: #889390;
+    --md-sys-color-outline-variant: #3F4946;
+
+    --md-sys-color-error: #FFB4AB;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000A;
+    --md-sys-color-on-error-container: #FFDAD6;
+
+    --md-sys-color-success: #86DC9E;
+    --md-sys-color-on-success: #00391B;
+    --md-sys-color-success-container: #00522B;
+    --md-sys-color-on-success-container: #A2F5B5;
+
+    --md-sys-color-warning: #FFBA37;
+    --md-sys-color-warning-container: #5C4100;
+    --md-sys-color-on-warning-container: #FFDEA2;
+
+    --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.40), 0px 1px 2px 0px rgba(0, 0, 0, 0.60);
+    --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.40), 0px 1px 2px 0px rgba(0, 0, 0, 0.60);
+    --md-sys-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.40), 0px 1px 3px 0px rgba(0, 0, 0, 0.60);
+  }
+}
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--md-ref-font-family);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Hierarchy */
+.m3-display-large { font-size: 57px; font-weight: 400; line-height: 64px; letter-spacing: -0.25px; }
+.m3-headline-medium { font-size: 28px; font-weight: 400; line-height: 36px; }
+.m3-headline-small { font-size: 24px; font-weight: 500; line-height: 32px; }
+.m3-title-large { font-size: 22px; font-weight: 500; line-height: 28px; }
+.m3-title-medium { font-size: 16px; font-weight: 500; line-height: 24px; letter-spacing: 0.15px; }
+.m3-title-small { font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: 0.1px; }
+.m3-body-large { font-size: 16px; font-weight: 400; line-height: 24px; letter-spacing: 0.5px; }
+.m3-body-medium { font-size: 14px; font-weight: 400; line-height: 20px; letter-spacing: 0.25px; }
+.m3-label-large { font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: 0.1px; }
+.m3-label-medium { font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: 0.5px; }
+.m3-label-small { font-size: 11px; font-weight: 500; line-height: 16px; letter-spacing: 0.5px; }
+
+/* SVG Icon Base */
+.m3-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* App Layout Shell */
+.m3-app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--md-sys-color-surface);
+}
+
+/* Top App Bar */
+.m3-top-app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 16px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.m3-top-app-bar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+}
+
+.m3-top-app-bar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-sys-shape-corner-m);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.m3-top-app-bar-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-top-app-bar-subtitle {
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-top-app-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Chips & Status Badges */
+.m3-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--md-sys-shape-corner-s);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.m3-chip-success {
+  background-color: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+  border-color: transparent;
+}
+
+.m3-chip-error {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  border-color: transparent;
+}
+
+.m3-chip-warning {
+  background-color: var(--md-sys-color-warning-container);
+  color: var(--md-sys-color-on-warning-container);
+  border-color: transparent;
+}
+
+.m3-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+
+}
+
+.m3-status-dot-pulse {
+  animation: m3-pulse 2s infinite;
+}
+
+@keyframes m3-pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Main Body Layout (Nav Drawer + Content) */
+.m3-app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Navigation Drawer / Rail */
+.m3-nav-drawer {
+  width: 280px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 4px;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.m3-nav-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 16px 16px 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.m3-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  user-select: none;
+}
+
+.m3-nav-item:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-nav-item.active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.m3-nav-item .m3-icon {
+  color: inherit;
+}
+
+/* Main Content Area & Iframe */
+.m3-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--md-sys-color-surface);
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.m3-content-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
+  border: none;
+  background: transparent;
+}
+
+/* Material 3 Surface Cards */
+.m3-card {
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-l);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.m3-card-elevated {
+  background-color: var(--md-sys-color-surface-container-low);
+  box-shadow: var(--md-sys-elevation-1);
+  border: none;
+}
+
+.m3-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.m3-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-card-title .m3-icon {
+  color: var(--md-sys-color-primary);
+}
+
+/* Grid System for Dashboard Cards */
+.m3-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Form Controls & Inputs */
+.m3-form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m3-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-input, .m3-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: var(--md-sys-shape-corner-m);
+  border: 1px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.m3-input:focus, .m3-select:focus {
+  border-color: var(--md-sys-color-primary);
+  border-width: 2px;
+  padding: 0 15px; /* Adjust for border thickness */
+}
+
+.m3-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.m3-input-wrapper .m3-input {
+  padding-right: 48px;
+}
+
+.m3-input-icon-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.m3-input-icon-btn:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.m3-helper-text {
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Buttons */
+.m3-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+  user-select: none;
+}
+
+.m3-btn-primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.m3-btn-primary:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 90%, black);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.m3-btn-outlined {
+  background-color: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.m3-btn-outlined:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.m3-btn-tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.m3-btn-tonal:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 90%, black);
+}
+
+.m3-btn-danger {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+}
+
+.m3-btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-btn-icon:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Data Tables */
+.m3-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--md-sys-shape-corner-m);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.m3-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.m3-table th {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.m3-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+}
+
+.m3-table tr:last-child td {
+  border-bottom: none;
+}
+
+.m3-table tr:hover td {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+/* Toggle Switch */
+.m3-switch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.m3-switch-input {
+  display: none;
+}
+
+.m3-switch-track {
+  width: 52px;
+  height: 32px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  border: 2px solid var(--md-sys-color-outline);
+  position: relative;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.m3-switch-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-outline);
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  transition: transform 0.2s ease, background-color 0.2s ease, width 0.2s ease;
+}
+
+.m3-switch-input:checked + .m3-switch-track {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.m3-switch-input:checked + .m3-switch-track .m3-switch-thumb {
+  transform: translateX(20px);
+  background-color: var(--md-sys-color-on-primary);
+  width: 24px;
+  height: 24px;
+  top: 2px;
+  left: 2px;
+}
+
+/* Mobile Overlay Drawer Button */
+.m3-mobile-menu-btn {
+  display: none;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+  .m3-mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  .m3-nav-drawer {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    z-index: 200;
+    transform: translateX(-100%);
+    box-shadow: var(--md-sys-elevation-3);
+  }
+
+  .m3-nav-drawer.open {
+    transform: translateX(0);
+  }
+
+  .m3-content-area {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .m3-top-app-bar-subtitle {
+    display: none;
+  }
+
+  .m3-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .m3-card {
+    padding: 16px;
+  }
+}
