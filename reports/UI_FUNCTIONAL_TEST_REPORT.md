@@ -1,8 +1,8 @@
-# UI Functional Test Report — Mifi Control Center
+# UI Functional Test Report — Mifi Control Center (APK v11)
 
 ## 1. Test Summary
 
-Functional testing was conducted against both the **Host Test Harness** (`HostServer`) and the **Live Modem Hardware** (UZ801 running APK v10).
+Functional testing was conducted against both the **Host Test Harness** (`HostServer`) and the **Live Modem Hardware** (UZ801 running APK v11).
 
 ---
 
@@ -32,10 +32,10 @@ Functional testing was conducted against both the **Host Test Harness** (`HostSe
 
 ## 3. On-Device Verification Evidence
 
-- **APK File**: `work/MifiService_v10_signed.apk`
+- **APK File**: `work/MifiService_v11_signed.apk`
 - **Signer Certificate SHA-256**: `c8a2e9bccf597c2fb6dc66bee293fc13f2fc47ec77bc6b2b0d52c11f51192ab8`
-- **Installed Version Code**: `10`
+- **Installed Version Code**: `11`
 - **Live HTTP Tests**:
-  - `GET http://192.168.100.1/index.html` -> HTTP **200 OK** (Length 7,702 B)
+  - `GET http://192.168.100.1/index.html` -> HTTP **200 OK** (Length 7,757 B)
   - `GET http://192.168.100.1/css/m3-theme.css` -> HTTP **200 OK** (Length 19,850 B)
   - `GET http://192.168.100.1/status.html` -> HTTP **200 OK** (Length 5,910 B)

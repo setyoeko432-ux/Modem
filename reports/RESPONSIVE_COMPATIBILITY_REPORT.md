@@ -1,4 +1,4 @@
-# Responsive Compatibility Report — Mifi Control Center
+# Responsive Compatibility Report — Mifi Control Center (APK v11)
 
 ## 1. Responsive Viewport Test Matrix
 
@@ -22,7 +22,7 @@ All pages were tested across target viewport widths using CSS media queries and 
 ## 2. Touch & Accessibility Acceptance Criteria
 
 - **Touch Target Size**: All interactive elements (buttons, nav items, inputs, switches) have a minimum height of `40px`–`48px` and minimum touch area of `44px × 44px`.
-- **Horizontal Overflow**: Verified zero horizontal scrollbar on viewport widths down to 320px (`*, *::before, *::after { box-sizing: border-border; }`).
+- **Horizontal Overflow**: Verified zero horizontal scrollbar on viewport widths down to 320px (`*, *::before, *::after { box-sizing: border-box; }`).
 - **Data Tables on Mobile**: All tables (`#sessions`, `#table`, `#table2`) are wrapped in `.m3-table-container` with smooth horizontal touch-scrolling.
 
 ---

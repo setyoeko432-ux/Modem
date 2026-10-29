@@ -1,4 +1,4 @@
-# UI Redesign Specification — Mifi Control Center
+# UI Redesign Specification — Mifi Control Center (APK v11)
 
 ## 1. Executive Summary & Brand Identity
 
@@ -6,6 +6,7 @@ The UZ801 Web Admin Portal has been transformed into **Mifi Control Center**, a 
 
 - **Product Name**: Mifi Control Center
 - **Design System**: Material Design 3 (M3)
+- **Target Version Code**: 11 (`MifiService_v11_signed.apk`)
 - **Primary Design Workspace**: `work/decoded_hardened/assets/jetty2/`
 - **Target Device Resolution**: Mobile (320px–430px), Tablet (600px–1024px), Desktop (1280px–1920px), Ultrawide (2560px+).
 

@@ -1,8 +1,8 @@
-# UI Implementation Report — Mifi Control Center
+# UI Implementation Report — Mifi Control Center (APK v11)
 
 ## 1. Overview & File Hierarchy
 
-All frontend assets were updated under `work/decoded_hardened/assets/jetty2/` and compiled into signed APK v10 (`MifiService_v10_signed.apk`).
+All frontend assets were updated under `work/decoded_hardened/assets/jetty2/` and compiled into signed APK v11 (`MifiService_v11_signed.apk`).
 
 ```text
 assets/jetty2/
@@ -18,8 +18,8 @@ assets/jetty2/
 ├── MacFilter.html                # MAC Filter Policy & Connected Devices
 ├── modifyPwd.html                # Admin Password Change
 ├── deviceInformation.html        # Hardware Info, Signal dBm & IMEI Edit
-├── deviceOperation.html          # Reboot & Factory Reset Controls
-├── upgrade.html                  # Firmware File Upload & Flash
+├── deviceOperation.html          # Security Policy Notice Card
+├── upgrade.html                  # Firmware Package Upload & Flash
 ├── css/
 │   ├── m3-theme.css             # Material Design 3 Design System
 │   └── layer.css                 # M3 Dialog / Popup Overrides
