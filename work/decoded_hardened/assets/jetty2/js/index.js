@@ -38,39 +38,32 @@ function init(){
 	    setStyleDisplay("body6", "inline");
 	    setStyleDisplay("body7", "none");
 	}
+	else if (getCookie("language") == "Indonesian") {
+	    $("#id").attr("selected", "selected");
+	    $("#en").removeAttr("selected");
+	    $("#zh").removeAttr("selected");
+	    $("#ru").removeAttr("selected");
+	}
 	else {
-	    $("#zh").html("Chinese");
-	    $("#en").html("English");
-	    $("#ru").html("Russion");
 	    $("#en").attr("selected", "selected");
 	    $("#zh").removeAttr("selected");
 	    $("#ru").removeAttr("selected");
-	    setStyleDisplay("body6", "inline");
-	    setStyleDisplay("body7", "none");
+	    $("#id").removeAttr("selected");
 	}
 }
 
 $("#select").bind('change', function (e) {
-	if($("#en").attr("selected") == "selected"){
-		$("#en").attr("selected","selected");
-		$("#zh").removeAttr("selected");
-		$("#ru").removeAttr("selected");
-		setCookie("language","English");
-		window.location = 'index.html';
-	}else if($("#zh").attr("selected") == "selected"){
-		$("#zh").attr("selected","selected");
-		$("#en").removeAttr("selected");
-		$("#ru").removeAttr("selected");
-		setCookie("language","Chinese");
-		window.location = 'index.html';
-    }
-    else {
-        $("#ru").attr("selected", "selected");
-        $("#zh").removeAttr("selected");
-        $("#en").removeAttr("selected");
-        setCookie("language", "Russion");
-        window.location = 'index.html';
+	var val = $(this).val();
+	if (val == "0") {
+		setCookie("language", "English");
+	} else if (val == "1") {
+		setCookie("language", "Chinese");
+	} else if (val == "2") {
+		setCookie("language", "Russion");
+	} else if (val == "3") {
+		setCookie("language", "Indonesian");
 	}
+	window.location = 'index.html';
 });
 
 $("#frm").bind('keypress', function (e) {

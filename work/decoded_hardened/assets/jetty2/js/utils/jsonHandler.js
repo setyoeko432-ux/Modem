@@ -47,6 +47,9 @@ function mifi_translate(k){
     else if(getCookie("language") == "English") {
         current_file_name = "en";
     }
+    else if(getCookie("language") == "Indonesian") {
+        current_file_name = "id";
+    }
     else
     {
         current_file_name = "ru";

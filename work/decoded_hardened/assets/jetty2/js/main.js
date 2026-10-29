@@ -107,39 +107,31 @@ function init(){
         document.getElementById("body7").style.display = "none";
 
     }
+    else if (getCookie("language") == "Indonesian") {
+        $("#id").attr("selected", "selected");
+        $("#en").removeAttr("selected");
+        $("#zh").removeAttr("selected");
+        $("#ru").removeAttr("selected");
+    }
     else {
-        $("#zh").html("Chinese");
-        $("#en").html("English");
-        $("#ru").html("Russion");
         $("#en").attr("selected", "selected");
         $("#zh").removeAttr("selected");
         $("#ru").removeAttr("selected");
-        document.getElementById("body6").style.display = "inline";
-        document.getElementById("body7").style.display = "none";
-        
+        $("#id").removeAttr("selected");
     }
 }
 $("#select").bind('change', function(e) {
-    if ($("#en").attr("selected") == "selected") {
-        $("#en").attr("selected", "selected");
-        $("#zh").removeAttr("selected");
-        $("#ru").removeAttr("selected");
+    var val = $(this).val();
+    if (val == "0") {
         setCookie("language", "English");
-        window.location = 'main.html';
-    } else if ($("#zh").attr("selected") == "selected") {
-        $("#zh").attr("selected", "selected");
-        $("#en").removeAttr("selected");
-        $("#ru").removeAttr("selected");
+    } else if (val == "1") {
         setCookie("language", "Chinese");
-        window.location = 'main.html';
-    }
-    else {
-        $("#ru").attr("selected", "selected");
-        $("#zh").removeAttr("selected");
-        $("#en").removeAttr("selected");
+    } else if (val == "2") {
         setCookie("language", "Russion");
-        window.location = 'main.html';
+    } else if (val == "3") {
+        setCookie("language", "Indonesian");
     }
+    window.location = 'main.html';
 });
 
 //�ź�ǿ�ȴ���
