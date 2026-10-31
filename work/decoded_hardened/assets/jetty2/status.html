@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Overview - 4G Modem</title>
+  <title>Dashboard - 4G Modem</title>
   <link rel="stylesheet" href="css/m3-theme.css">
   <link rel="stylesheet" href="css/layer.css">
   <script src="./js/m3-theme.js"></script>
@@ -16,186 +16,362 @@
   <script src="./js/utils/cookiesHandler.js" type="text/javascript"></script>
   <script src="./js/utils/jsonHandler.js" type="text/javascript"></script>
   <style>
-    .m3-stat-box {
-      background-color: var(--md-sys-color-surface-container-low);
-      border-radius: var(--md-sys-shape-corner-m);
-      padding: 16px;
+    /* ── Hero Connection Card ───────────────────────────────────────── */
+    .hero-card {
+      background: linear-gradient(135deg,
+        var(--md-sys-color-primary-container) 0%,
+        var(--md-sys-color-secondary-container) 100%);
+      border-radius: var(--md-sys-shape-corner-xl);
+      padding: 28px 28px 24px;
+      margin-bottom: 24px;
       display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
       align-items: center;
+      justify-content: space-between;
+    }
+    .hero-left { display: flex; align-items: center; gap: 20px; }
+    .hero-signal-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .signal-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 28px;
+    }
+    .signal-bar {
+      width: 5px;
+      background-color: var(--md-sys-color-outline-variant);
+      border-radius: 2px;
+      transition: background-color 0.3s ease, height 0.3s ease;
+    }
+    .signal-bar:nth-child(1) { height: 6px; }
+    .signal-bar:nth-child(2) { height: 10px; }
+    .signal-bar:nth-child(3) { height: 16px; }
+    .signal-bar:nth-child(4) { height: 22px; }
+    .signal-bar:nth-child(5) { height: 28px; }
+
+    #hero-signal.rssi1 .signal-bar:nth-child(1)                              { background-color: var(--md-sys-color-primary); }
+    #hero-signal.rssi2 .signal-bar:nth-child(1),
+    #hero-signal.rssi2 .signal-bar:nth-child(2)                              { background-color: var(--md-sys-color-primary); }
+    #hero-signal.rssi3 .signal-bar:nth-child(1),
+    #hero-signal.rssi3 .signal-bar:nth-child(2),
+    #hero-signal.rssi3 .signal-bar:nth-child(3)                              { background-color: var(--md-sys-color-primary); }
+    #hero-signal.rssi4 .signal-bar:nth-child(1),
+    #hero-signal.rssi4 .signal-bar:nth-child(2),
+    #hero-signal.rssi4 .signal-bar:nth-child(3),
+    #hero-signal.rssi4 .signal-bar:nth-child(4)                              { background-color: var(--md-sys-color-primary); }
+    #hero-signal.rssi5 .signal-bar:nth-child(1),
+    #hero-signal.rssi5 .signal-bar:nth-child(2),
+    #hero-signal.rssi5 .signal-bar:nth-child(3),
+    #hero-signal.rssi5 .signal-bar:nth-child(4),
+    #hero-signal.rssi5 .signal-bar:nth-child(5)                              { background-color: var(--md-sys-color-primary); }
+
+    .signal-dbm {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-primary-container);
+      opacity: 0.75;
+    }
+    .hero-info { display: flex; flex-direction: column; gap: 4px; }
+    .hero-operator {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-primary-container);
+      line-height: 1.2;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--md-sys-shape-corner-full);
+      font-size: 12px;
+      font-weight: 600;
+      background-color: rgba(0,0,0,0.12);
+      color: var(--md-sys-color-on-primary-container);
+    }
+    .hero-badge-connected {
+      background-color: var(--md-sys-color-success-container);
+      color: var(--md-sys-color-on-success-container);
+    }
+    .hero-badge-disconnected {
+      background-color: var(--md-sys-color-error-container);
+      color: var(--md-sys-color-on-error-container);
+    }
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    /* ── Speed Cards ─────────────────────────────────────────────────── */
+    .speed-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
+      margin-bottom: 24px;
+    }
+    .speed-card {
+      background-color: var(--md-sys-color-surface-container-low);
+      border-radius: var(--md-sys-shape-corner-l);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       border: 1px solid var(--md-sys-color-outline-variant);
     }
-
-    .m3-stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--md-sys-shape-corner-m);
-      background-color: var(--md-sys-color-primary-container);
-      color: var(--md-sys-color-on-primary-container);
+    .speed-icon-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      gap: 8px;
+      color: var(--md-sys-color-primary);
     }
-
-    .m3-stat-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--md-sys-color-on-surface-variant);
+    .speed-label { font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
+    .speed-value { font-size: 26px; font-weight: 700; color: var(--md-sys-color-on-surface); line-height: 1.1; }
+    .speed-unit  { font-size: 13px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
+    .speed-total { font-size: 11px; color: var(--md-sys-color-on-surface-variant); margin-top: 2px; }
+    /* ── Info Grid ───────────────────────────────────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
     }
-
-    .m3-stat-value {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-      margin-top: 2px;
-    }
-
     .m3-info-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      gap: 12px;
     }
-
-    .m3-info-row:last-child {
-      border-bottom: none;
-    }
-
-    .m3-info-label {
-      font-size: 13px;
-      color: var(--md-sys-color-on-surface-variant);
-      font-weight: 500;
-    }
-
-    .m3-info-value {
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface);
+    .m3-info-row:last-child { border-bottom: none; }
+    .m3-info-label { font-size: 13px; color: var(--md-sys-color-on-surface-variant); font-weight: 500; flex-shrink: 0; }
+    .m3-info-value { font-size: 14px; color: var(--md-sys-color-on-surface); font-weight: 600; text-align: right; word-break: break-all; }
+    /* ── Devices Table ───────────────────────────────────────────────── */
+    .devices-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .devices-table th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--md-sys-color-on-surface-variant);
+      background-color: var(--md-sys-color-surface-container);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .devices-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface);
+    }
+    .devices-table tr:last-child td { border-bottom: none; }
+    .devices-table tr:hover td { background-color: var(--md-sys-color-surface-container-high); }
+    .device-type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--md-sys-shape-corner-xs);
+      font-size: 11px;
+      font-weight: 600;
+      background-color: var(--md-sys-color-tertiary-container);
+      color: var(--md-sys-color-on-tertiary-container);
+    }
+    /* ── Quick Action ────────────────────────────────────────────────── */
+    .quick-action-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    /* Pulse dot */
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background-color: var(--md-sys-color-success);
+      display: inline-block;
+      animation: pulse-anim 2s infinite;
+    }
+    .pulse-dot.disconnected { background-color: var(--md-sys-color-error); animation: none; }
+    @keyframes pulse-anim {
+      0%   { transform: scale(1);   opacity: 1; }
+      50%  { transform: scale(1.4); opacity: 0.7; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @media (max-width: 700px) {
+      .speed-row { grid-template-columns: 1fr 1fr; }
+      .hero-right { align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .speed-row { grid-template-columns: 1fr; }
+      .hero-card { padding: 20px 16px; }
     }
   </style>
 </head>
-
 <body>
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <!-- Page Header -->
-    <div style="margin-bottom: 24px;">
-      <h1 class="m3-headline-small" style="font-weight: 600; color: var(--md-sys-color-on-surface);" lang="Internet Connection">System Overview</h1>
-      <p class="m3-body-medium" style="color: var(--md-sys-color-on-surface-variant);">Real-time network and connection status</p>
-    </div>
+  <div style="max-width: 1100px; margin: 0 auto;">
 
-    <!-- Traffic & Quick Stats Grid -->
-    <div class="m3-grid">
-      <!-- Transmitted Data (TX) -->
-      <div class="m3-stat-box">
-        <div class="m3-stat-icon">
-          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+    <!-- ── Hero Connection Card ──────────────────────────────────── -->
+    <div class="hero-card">
+      <div class="hero-left">
+        <div class="hero-signal-wrap">
+          <div id="hero-signal" class="signal-bars rssi0">
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+          </div>
+          <div class="signal-dbm" id="hero-dbm">— dBm</div>
         </div>
-        <div>
-          <div class="m3-stat-label" lang="Transmitted:">Transmitted (Upload)</div>
-          <div class="m3-stat-value" id="mifi_tx_data">0 KB</div>
+        <div class="hero-info">
+          <div class="hero-operator" id="hero-operator">Loading…</div>
+          <div class="hero-meta">
+            <span class="hero-badge" id="hero-netmode">4G</span>
+            <span class="hero-badge hero-badge-disconnected" id="hero-status">
+              <span class="pulse-dot disconnected" id="hero-dot"></span>
+              <span id="hero-status-text">Connecting…</span>
+            </span>
+          </div>
         </div>
       </div>
-
-      <!-- Received Data (RX) -->
-      <div class="m3-stat-box">
-        <div class="m3-stat-icon">
-          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>
-        </div>
-        <div>
-          <div class="m3-stat-label" lang="Received:">Received (Download)</div>
-          <div class="m3-stat-value" id="mifi_rx_data">0 KB</div>
-        </div>
-      </div>
-
-      <!-- Connected Clients -->
-      <div class="m3-stat-box">
-        <div class="m3-stat-icon">
-          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M4 6h16v10H4z" fill="none"/><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
-        </div>
-        <div>
-          <div class="m3-stat-label" lang="Users:">Connected Devices</div>
-          <div class="m3-stat-value" id="client_num">0 / 10</div>
+      <div class="hero-right">
+        <!-- Quick connect toggle -->
+        <div class="quick-action-row">
+          <span class="m3-label" style="color:var(--md-sys-color-on-primary-container);">Connection</span>
+          <select id="connect" class="m3-select" style="width:160px; height:36px; padding:0 10px; font-size:13px;">
+            <option value="0">Auto-Connect</option>
+            <option value="1">Manual</option>
+          </select>
+          <button id="apply" class="m3-btn m3-btn-primary" style="height:36px; padding:0 16px;">Apply</button>
         </div>
       </div>
     </div>
 
-    <!-- Main Overview Cards Grid -->
-    <div class="m3-grid">
-      <!-- Internet Connection Details Card -->
-      <div class="m3-card">
+    <!-- ── Speed & Traffic Row ──────────────────────────────────── -->
+    <div class="speed-row">
+      <!-- Download speed -->
+      <div class="speed-card">
+        <div class="speed-icon-row">
+          <svg class="m3-icon" viewBox="0 0 24 24" width="20" height="20"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>
+          <span class="speed-label">Download</span>
+        </div>
+        <div>
+          <span class="speed-value" id="rx-speed">—</span>
+          <span class="speed-unit" id="rx-unit"> KB/s</span>
+        </div>
+        <div class="speed-total">Total: <span id="rx-total">0 KB</span></div>
+      </div>
+      <!-- Upload speed -->
+      <div class="speed-card">
+        <div class="speed-icon-row">
+          <svg class="m3-icon" viewBox="0 0 24 24" width="20" height="20"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+          <span class="speed-label">Upload</span>
+        </div>
+        <div>
+          <span class="speed-value" id="tx-speed">—</span>
+          <span class="speed-unit" id="tx-unit"> KB/s</span>
+        </div>
+        <div class="speed-total">Total: <span id="tx-total">0 KB</span></div>
+      </div>
+      <!-- Connected devices -->
+      <div class="speed-card">
+        <div class="speed-icon-row">
+          <svg class="m3-icon" viewBox="0 0 24 24" width="20" height="20"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+          <span class="speed-label">Devices</span>
+        </div>
+        <div>
+          <span class="speed-value" id="client-count">—</span>
+          <span class="speed-unit" id="client-max"> / 10</span>
+        </div>
+        <div class="speed-total">Connected clients</div>
+      </div>
+    </div>
+
+    <!-- ── Network & Wi-Fi Info ─────────────────────────────────── -->
+    <div class="info-grid">
+      <!-- WAN / IP -->
+      <div class="m3-card" style="margin-bottom:0">
         <div class="m3-card-header">
           <div class="m3-card-title">
             <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-            <span>WAN &amp; IP Network</span>
+            WAN / IP
           </div>
         </div>
-        <div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="IP Address:">IP Address</span>
-            <span class="m3-info-value" id="mifi_ip">192.168.100.1</span>
-          </div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="Mask:">Subnet Mask</span>
-            <span class="m3-info-value" id="g3_mask">255.255.255.0</span>
-          </div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="DNS:">Primary DNS</span>
-            <span class="m3-info-value" id="g3_dns">8.8.8.8</span>
-          </div>
-          <div class="m3-info-row">
-            <span class="m3-info-label">Secondary DNS</span>
-            <span class="m3-info-value" id="g3_dns2">8.8.4.4</span>
-          </div>
-        </div>
+        <div class="m3-info-row"><span class="m3-info-label">IP Address</span><span class="m3-info-value" id="mifi_ip">—</span></div>
+        <div class="m3-info-row"><span class="m3-info-label">Subnet Mask</span><span class="m3-info-value" id="g3_mask">—</span></div>
+        <div class="m3-info-row"><span class="m3-info-label">Primary DNS</span><span class="m3-info-value" id="g3_dns">—</span></div>
+        <div class="m3-info-row"><span class="m3-info-label">Secondary DNS</span><span class="m3-info-value" id="g3_dns2">—</span></div>
       </div>
 
-      <!-- Wi-Fi Status Card -->
-      <div id="wifi_status" class="m3-card">
+      <!-- Wi-Fi -->
+      <div class="m3-card" style="margin-bottom:0">
         <div class="m3-card-header">
           <div class="m3-card-title">
             <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 3C7.95 3 4.21 4.34 1.2 6.6L3 9c2.53-1.89 5.66-3 9-3s6.47 1.11 9 3l1.8-2.4C19.79 4.34 16.05 3 12 3zm0 6c-2.88 0-5.54.91-7.72 2.45L6 13.8c1.68-1.12 3.73-1.8 6-1.8s4.32.68 6 1.8l1.72-2.35C17.54 9.91 14.88 9 12 9zm0 6c-1.78 0-3.41.52-4.8 1.41L12 21l4.8-4.59C15.41 15.52 13.78 15 12 15z"/></svg>
-            <span lang="Wi-Fi Status">Wi-Fi Network</span>
+            Wi-Fi Network
           </div>
         </div>
-        <div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="Network Name(SSID):">SSID Name</span>
-            <span class="m3-info-value" id="ssid">MIFI-4G</span>
-          </div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="IP Address:">WLAN IP</span>
-            <span class="m3-info-value" id="wlan_ip">192.168.100.1</span>
-          </div>
-          <div class="m3-info-row">
-            <span class="m3-info-label" lang="Password:">Password</span>
-            <span class="m3-info-value" id="password">••••••••</span>
-          </div>
-        </div>
+        <div class="m3-info-row"><span class="m3-info-label">SSID</span><span class="m3-info-value" id="ssid">—</span></div>
+        <div class="m3-info-row"><span class="m3-info-label">WLAN IP</span><span class="m3-info-value" id="wlan_ip">—</span></div>
       </div>
 
-      <!-- Connection Mode Card -->
-      <div class="m3-card">
+      <!-- SIM -->
+      <div class="m3-card" style="margin-bottom:0">
         <div class="m3-card-header">
           <div class="m3-card-title">
-            <svg class="m3-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-            <span lang="Network Connection">Connection Control</span>
+            <svg class="m3-icon" viewBox="0 0 24 24"><path d="M19.99 4c0-1.1-.89-2-1.99-2h-8L4 8v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2l.01-16zM9 19H7v-2h2v2zm0-4H7v-4h2v4zm4 4h-2v-4h2v4zm0-6h-2v-2h2v2zm4 6h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            SIM Card
           </div>
         </div>
-        <div class="m3-form-group">
-          <label class="m3-label" for="connect" id="configauto">Connection Mode</label>
-          <select id="connect" name="wwan.autoconnect" class="m3-select">
-            <option id="auto" value="0" lang="Connect">Auto Connect</option>
-            <option id="manual" value="1" lang="Disconnect">Manual Connection</option>
-          </select>
+        <div class="m3-info-row">
+          <span class="m3-info-label">Status</span>
+          <span id="sim-status-badge" class="m3-chip" style="font-size:12px;">—</span>
         </div>
-        <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-          <input type="submit" id="apply" class="m3-btn m3-btn-primary" value="Apply" lang="Apply">
-        </div>
+        <div class="m3-info-row"><span class="m3-info-label">IMSI</span><span class="m3-info-value" id="sim-imsi">—</span></div>
+        <div class="m3-info-row"><span class="m3-info-label">ICCID</span><span class="m3-info-value" id="sim-iccid" style="font-size:12px;">—</span></div>
       </div>
     </div>
-  </div>
+
+    <!-- ── Connected Devices ────────────────────────────────────── -->
+    <div class="m3-card">
+      <div class="m3-card-header">
+        <div class="m3-card-title">
+          <svg class="m3-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+          Connected Devices
+        </div>
+        <span class="m3-chip" id="devices-count-chip" style="font-size:12px;">0 devices</span>
+      </div>
+      <div style="overflow-x:auto; border-radius: var(--md-sys-shape-corner-m); border: 1px solid var(--md-sys-color-outline-variant);">
+        <table class="devices-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hostname</th>
+              <th>IP Address</th>
+              <th>MAC Address</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="devices-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--md-sys-color-on-surface-variant);">Loading devices…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /max-width wrapper -->
 
   <script src="./js/status.js" type="text/javascript"></script>
 </body>

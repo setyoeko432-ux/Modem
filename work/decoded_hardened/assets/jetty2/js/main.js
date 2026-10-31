@@ -103,8 +103,8 @@ function init(){
         $("#ru").attr("selected", "selected");
         $("#en").removeAttr("selected");
         $("#zh").removeAttr("selected");
-        document.getElementById("body6").style.display = "inline";
-        document.getElementById("body7").style.display = "none";
+        var b6 = document.getElementById("body6"); if (b6) b6.style.display = "inline";
+        var b7 = document.getElementById("body7"); if (b7) b7.style.display = "none";
 
     }
     else if (getCookie("language") == "Indonesian") {

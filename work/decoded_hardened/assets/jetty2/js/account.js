@@ -69,28 +69,28 @@ function loadPrefs() {
     request({funcNo: 1064}, function(data) {
         if (data.flag != "1" || !data.results[0]) { return; }
         var p = data.results[0].prefs || {};
-        if (p.lang) { $("#pLang").val(p.lang); }
-        if (p.theme) { $("#pTheme").val(p.theme); }
+        if (p.lang)           { $("#pLang").val(p.lang); }
         if (p.refreshSeconds) { $("#pRefresh").val(p.refreshSeconds); }
-        if (p.speedUnit) { $("#pUnit").val(p.speedUnit); }
-        $("#recoveryStatus").text(data.results[0].recoveryConfigured == "1"
-            ? "A recovery code is set." : "No recovery code yet. Create one so a forgotten password is not a lock-out.");
+        if (p.speedUnit)      { $("#pUnit").val(p.speedUnit); }
+        applyPrefsToAppearance(p);
+        $("#recoveryStatus")
+            .removeClass("m3-chip-success m3-chip-warning")
+            .addClass(data.results[0].recoveryConfigured == "1" ? "m3-chip-success" : "m3-chip-warning")
+            .text(data.results[0].recoveryConfigured == "1"
+                ? "A recovery code is set."
+                : "No recovery code — create one to avoid a lock-out.");
     });
 }
 
 function savePrefs() {
     var p = {
-        lang: $("#pLang").val(),
-        theme: $("#pTheme").val(),
+        lang:           $("#pLang").val(),
         refreshSeconds: parseInt($("#pRefresh").val(), 10) || 5,
-        speedUnit: $("#pUnit").val()
+        speedUnit:      $("#pUnit").val()
     };
     request({funcNo: 1065, prefs: p}, function(data) {
         if (data.flag == "1") {
             Alert("Preferences saved.");
-            if (p.theme === "dark" || p.theme === "light") {
-                if (window.M3Theme) { window.M3Theme.setTheme(p.theme); }
-            }
         } else {
             Alert(RM_TEXT[data.error_info] || data.error_info || "Could not save.");
         }
@@ -100,9 +100,9 @@ function savePrefs() {
 function newCode() {
     var pwd = $("#confirmPwd").val();
     if (pwd == "") { Alert("Enter your current password first."); return; }
-    request({funcNo: 1067, pwd: pwd}, function(data) {
-        if (data.flag == "1" && data.results && data.results[0] && data.results[0].code) {
-            $("#recoveryValue").text(data.results[0].code);
+    request({funcNo: 1067, password: pwd}, function(data) {
+        if (data.flag == "1" && data.results && data.results[0] && data.results[0].recoveryCode) {
+            $("#recoveryValue").text(data.results[0].recoveryCode);
             $("#recoveryBox").show();
             $("#confirmPwd").val("");
             loadPrefs();
@@ -112,13 +112,91 @@ function newCode() {
     });
 }
 
+/* ── Appearance: theme chips ────────────────────────────────── */
+var _currentTheme = "auto";
+var _currentSeed  = "#006A60";
+
+function initAppearanceUI() {
+    /* theme chips */
+    $(".theme-chip").on("click", function() {
+        $(".theme-chip").removeClass("selected");
+        $(this).addClass("selected");
+        _currentTheme = $(this).data("theme");
+        /* preview immediately */
+        if (window.M3Theme) {
+            window.M3Theme.setTheme(_currentTheme === "auto" ? "system" : _currentTheme);
+        }
+    });
+
+    /* preset swatches */
+    $(document).on("click", ".swatch", function() {
+        $(".swatch").removeClass("selected");
+        $(this).addClass("selected");
+        _currentSeed = $(this).data("color");
+        /* style the custom input to reflect chosen */
+        $("#custom-color").val(_currentSeed);
+    });
+
+    /* custom color picker */
+    $("#custom-swatch-wrap").on("click", function() {
+        $("#custom-color").trigger("click");
+    });
+    $("#custom-color").on("input change", function() {
+        var col = $(this).val();
+        _currentSeed = col;
+        /* deselect preset swatches */
+        $(".swatch").removeClass("selected");
+    });
+}
+
+function applyPrefsToAppearance(p) {
+    if (!p) return;
+    if (p.theme) {
+        _currentTheme = p.theme;
+        $(".theme-chip").removeClass("selected");
+        $(".theme-chip[data-theme='" + p.theme + "']").addClass("selected");
+    }
+    if (p.seedColor) {
+        _currentSeed = p.seedColor;
+        /* try to highlight a preset swatch */
+        var matched = false;
+        $(".swatch").each(function() {
+            if ($(this).data("color").toLowerCase() === p.seedColor.toLowerCase()) {
+                $(".swatch").removeClass("selected");
+                $(this).addClass("selected");
+                matched = true;
+            }
+        });
+        if (!matched) {
+            $(".swatch").removeClass("selected");
+            $("#custom-color").val(p.seedColor);
+        }
+    }
+}
+
+function saveAppearance() {
+    var p = { theme: _currentTheme, seedColor: _currentSeed };
+    request({funcNo: 1065, prefs: p}, function(data) {
+        if (data.flag == "1") {
+            Alert("Appearance saved.");
+            if (window.M3Theme) {
+                window.M3Theme.setTheme(_currentTheme === "auto" ? "system" : _currentTheme);
+            }
+        } else {
+            Alert(RM_TEXT[data.error_info] || data.error_info || "Could not save.");
+        }
+    });
+}
+
 $(function() {
     loadSessions();
     loadPrefs();
+    initAppearanceUI();
     $("#logout").on("click", function() {
         request({funcNo: 1061}, function() { window.location = "index.html"; });
     });
     $("#savePrefs").on("click", savePrefs);
+    $("#saveAppearance").on("click", saveAppearance);
     $("#newCode").on("click", newCode);
     $("body").show();
 });
